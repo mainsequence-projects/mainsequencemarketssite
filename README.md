@@ -1,13 +1,45 @@
-# mainsequencemarketssite
+# MainSequence Markets Site
 
+Standalone and embeddable Vite/React application for the `mainsequencemarkets` `apps/v1` API.
+The browser calls one exact configured API origin directly. It does not depend on Command Center's
+connection registry, proxy, or session cache. Generic resource views, themes, and the static-site
+iframe handshake come from the editable `@dev-mainsequence/command-center-sdk` dependency.
 
-
-## Quickstart
-
-
+## Run locally
 
 ```bash
-# from the repo root
-pip install -e .
-# or, if 'uv' is available (your scripts install it when using requirements):
-uv pip install -e .
+cd frontend
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
+`VITE_API_BASE_URL` is required and must be an exact HTTP(S) origin. Embedded deployments must also
+set `VITE_COMMAND_CENTER_ORIGIN` to one exact parent origin.
+
+## Verification
+
+```bash
+cd frontend
+npm run api:check
+npm run typecheck
+npm run lint
+npm test
+npm run build
+npm run test:e2e
+```
+
+## Documentation
+
+- [Architecture](docs/architecture.md)
+- [Local development](docs/local-development.md)
+- [API contract](docs/api-contract.md)
+- [Route compatibility](docs/route-compatibility.md)
+- [Embedding and security](docs/embedding-security.md)
+- [Deployment and rollback](docs/deployment-and-rollback.md)
+- [Implementation plan](docs/implementation_tasks/001_mainsequence_markets_site_refactor.md)
+- [Full SDK refactor implementation](docs/implementation_tasks/002_command_center_sdk_normalization.md)
+
+The site repository milestone is implemented and locally verified. The independent widget package,
+authenticated platform release, and Command Center source removal remain separate gated changes and
+are not claimed complete by this repository.

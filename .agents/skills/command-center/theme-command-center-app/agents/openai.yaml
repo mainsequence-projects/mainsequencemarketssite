@@ -1,0 +1,4 @@
+interface:
+  display_name: "Theme Command Center App"
+  short_description: "Apply SDK themes, tokens, and styles"
+  default_prompt: "Use $theme-command-center-app to apply Command Center themes and styles to this application."

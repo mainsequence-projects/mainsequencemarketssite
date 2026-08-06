@@ -1,0 +1,7 @@
+schema=1
+library_name=@dev-mainsequence/command-center-sdk
+namespace=command-center
+pinned_version=0.1.2
+skills_path=/Users/jose/code/MainSequenceClientSide/command-center-sdk/command-center-sdk/agent_scaffold/skills
+copied_at_utc=2026-08-06T10:18:34.108Z
+command=command-center-sdk skills install

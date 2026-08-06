@@ -1,0 +1,4 @@
+interface:
+  display_name: "Choose Command Center Surface"
+  short_description: "Route requirements to authoritative SDK surfaces"
+  default_prompt: "Use $choose-command-center-surface to choose the correct Command Center SDK surface for this requirement."
