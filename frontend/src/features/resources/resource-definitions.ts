@@ -38,7 +38,7 @@ export type ResourceDefinition = {
   create?: MutationDefinition;
   update?: MutationDefinition;
   remove?: MutationDefinition;
-  bulkRemove?: MutationDefinition;
+  bulkActionsPath?: string;
   details?: DetailSectionDefinition[];
   actions?: MutationDefinition[];
 };
@@ -122,14 +122,7 @@ export const assetCategoriesDefinition: ResourceDefinition = {
     description: "Delete this asset category.",
     destructive: true,
   },
-  bulkRemove: {
-    label: "Delete selected",
-    operationId: "bulkDeleteAssetCategories",
-    method: "POST",
-    path: () => "/api/v1/asset-category/bulk-delete/",
-    description: "Delete all selected asset categories.",
-    destructive: true,
-  },
+  bulkActionsPath: "/api/v1/asset-category/bulk-actions/",
 };
 
 export const indicesDefinition: ResourceDefinition = {
@@ -313,14 +306,7 @@ export const portfoliosDefinition: ResourceDefinition = {
     description: "Delete this portfolio registry record.",
     destructive: true,
   },
-  bulkRemove: {
-    label: "Delete selected",
-    operationId: "bulkDeletePortfolios",
-    method: "POST",
-    path: () => "/api/v1/portfolio/bulk-delete/",
-    description: "Delete the selected portfolio registry records.",
-    destructive: true,
-  },
+  bulkActionsPath: "/api/v1/portfolio/bulk-actions/",
   details: [
     { title: "Summary", operationId: "getPortfolioSummary", path: (uid) => `/api/v1/portfolio/${uid}/summary/` },
     { title: "Weights", operationId: "getPortfolioWeights", path: (uid) => `/api/v1/portfolio/${uid}/weights/` },
@@ -382,14 +368,7 @@ export const portfolioGroupsDefinition: ResourceDefinition = {
     description: "Delete this portfolio group.",
     destructive: true,
   },
-  bulkRemove: {
-    label: "Delete selected",
-    operationId: "bulkDeletePortfolioGroups",
-    method: "POST",
-    path: () => "/api/v1/portfolio-group/bulk-delete/",
-    description: "Delete all selected portfolio groups.",
-    destructive: true,
-  },
+  bulkActionsPath: "/api/v1/portfolio-group/bulk-actions/",
   details: [
     { title: "Portfolios", operationId: "listPortfoliosInGroup", path: (uid) => `/api/v1/portfolio-group/${uid}/portfolios/` },
   ],

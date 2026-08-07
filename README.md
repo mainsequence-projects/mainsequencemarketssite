@@ -39,7 +39,9 @@ npm run test:e2e
 - [Deployment and rollback](docs/deployment-and-rollback.md)
 - [Implementation plan](docs/implementation_tasks/001_mainsequence_markets_site_refactor.md)
 - [Full SDK refactor implementation](docs/implementation_tasks/002_command_center_sdk_normalization.md)
+- [SDK 0.1.3 alignment plan](docs/implementation_tasks/003_command_center_sdk_0_1_3_alignment.md)
 
-The site repository milestone is implemented and locally verified. The independent widget package,
-authenticated platform release, and Command Center source removal remain separate gated changes and
-are not claimed complete by this repository.
+The SDK 0.1.3 frontend alignment is implemented and locally verified. Production bulk actions remain
+gated on the backend discovery/preflight/execution contract documented under the API contract. The
+independent widget package, authenticated platform release, and Command Center source removal remain
+separate gated changes and are not claimed complete by this repository.

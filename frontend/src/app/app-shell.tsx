@@ -61,7 +61,7 @@ const navigation: NavigationGroup[] = [
     label: "Platform",
     items: [
       { label: "Calendars", path: "/calendars", icon: CalendarDays },
-      { label: "Settings", path: "/settings", icon: Settings2 },
+      { label: "API Diagnostics", path: "/settings", icon: Settings2 },
     ],
   },
 ];
@@ -80,6 +80,15 @@ export function AppShell({ children }: { children: ReactNode }) {
         <p>The application is waiting for an initialize message from the configured Command Center origin.</p>
         {runtime.embedError ? <p className="inline-error" role="alert">{runtime.embedError}</p> : null}
       </main>
+    );
+  }
+
+  if (runtime.configuration.embedded) {
+    return (
+      <div className="embedded-app">
+        <a className="skip-link" href="#main-content">Skip to content</a>
+        {children}
+      </div>
     );
   }
 
@@ -133,16 +142,14 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div><span>Markets</span><strong>{currentTitle}</strong></div>
           </div>
           <div className="topbar-actions">
-            {!runtime.configuration.embedded ? (
-              <button className="icon-button" type="button" onClick={runtime.toggleStandaloneTheme} aria-label="Toggle color theme">
-                {runtime.themeMode === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-              </button>
-            ) : null}
+            <button className="icon-button" type="button" onClick={runtime.toggleStandaloneTheme} aria-label="Toggle color theme">
+              {runtime.themeMode === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
             <div className="session-status">
               <span className="status-dot" />
               <div>
-                <strong>{runtime.configuration.embedded ? "Embedded" : "Standalone"}</strong>
-                <small>{runtime.userUid ? "Public user context received" : "Gateway session"}</small>
+                <strong>Standalone</strong>
+                <small>Gateway session</small>
               </div>
             </div>
           </div>

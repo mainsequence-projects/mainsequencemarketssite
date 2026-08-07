@@ -2,7 +2,6 @@ import {
   createHttpResourceAdapter,
   defineResourceApplication,
   type ResourceApplicationDefinition,
-  type ResourceBulkActionDefinition,
   type ResourceCollectionControls,
   type ResourceHttpClient,
   type ResourceListRequest,
@@ -24,9 +23,6 @@ export type MarketsResourceApplication = ResourceApplicationDefinition<ApiRecord
 export function createMarketsResourceApplication(
   definition: ResourceDefinition,
 ): MarketsResourceApplication {
-  const bulkAction = definition.bulkRemove
-    ? createBulkAction(definition)
-    : null;
   const client: ResourceHttpClient = {
     request: <Response,>(request: {
       method: "DELETE" | "GET" | "PATCH" | "POST" | "PUT";
@@ -42,7 +38,9 @@ export function createMarketsResourceApplication(
       signal: request.signal,
       operationId: request.path === definition.listPath
         ? definition.listOperationId
-        : definition.detailOperationId,
+        : request.method === "GET" && request.path !== definition.bulkActionsPath
+          ? definition.detailOperationId
+          : undefined,
     }),
   };
   const httpAdapter = createHttpResourceAdapter<
@@ -54,6 +52,7 @@ export function createMarketsResourceApplication(
     client,
     endpoints: {
       list: definition.listPath,
+      bulkActions: definition.bulkActionsPath,
       detail: definition.detailPath
         ? (id) => definition.detailPath!(encodeURIComponent(id))
         : undefined,
@@ -62,7 +61,6 @@ export function createMarketsResourceApplication(
       response,
       request,
       collectionControls(definition),
-      bulkAction ? [bulkAction] : undefined,
     ),
     normalizeItem: (response) => response,
     serializeListQuery: (request) => serializeMarketsListQuery(definition, request),
@@ -78,7 +76,6 @@ export function createMarketsResourceApplication(
       id: column.key,
       header: column.label,
       getValue: (resource) => resource[column.key],
-      sortableKey: column.key,
     })),
     activation: definition.detailRoute ? {
       resolve: (resource) => ({ resource: definition.id, uid: requireRecordUid(resource) }),
@@ -100,7 +97,7 @@ export function createMarketsResourceApplication(
         label: action.label,
         scope: "detail" as const,
         tone: action.destructive ? "danger" as const : "default" as const,
-        requiresConfirmation: true,
+        requiresConfirmation: Boolean(action.destructive),
       })),
       ...(definition.remove ? [{
         id: sdkActionId(definition.remove.operationId),
@@ -168,20 +165,6 @@ export function createMarketsResourceApplication(
           });
         }
         : undefined,
-      executeBulkAction: bulkAction && definition.bulkRemove
-        ? async (action, input) => {
-          if (action.id !== bulkAction.id || input.selection.mode !== "explicit") {
-            throw new Error("This Markets bulk action requires an explicit UID selection.");
-          }
-          return apiRequest({
-            method: definition.bulkRemove!.method,
-            path: definition.bulkRemove!.path(""),
-            operationId: definition.bulkRemove!.operationId,
-            body: { uids: input.selection.uids },
-            signal: input.signal,
-          });
-        }
-        : undefined,
     },
   });
 }
@@ -196,9 +179,6 @@ export function serializeMarketsListQuery(
     offset: request.pageIndex * request.pageSize,
     search: definition.searchable === false ? undefined : request.search,
     ...normalizeQueryValues(request.filters),
-    ordering: request.sort?.length
-      ? request.sort.map((sort) => `${sort.direction === "descending" ? "-" : ""}${sort.key}`).join(",")
-      : undefined,
   };
 }
 
@@ -206,7 +186,6 @@ export function normalizeMarketsCollection(
   response: CollectionResponse<ApiRecord>,
   request: ResourceListRequest,
   controls?: ResourceCollectionControls,
-  bulkActions?: readonly ResourceBulkActionDefinition[],
 ): ResourceListResult<ApiRecord> {
   const collection = normalizeCollection(response);
   const paginated = isPaginatedResponse(response) ? response : null;
@@ -222,7 +201,6 @@ export function normalizeMarketsCollection(
       hasPreviousPage: paginated ? paginated.previous !== null : request.pageIndex > 0,
     },
     controls,
-    bulkActions,
   };
 }
 
@@ -237,29 +215,7 @@ function collectionControls(definition: ResourceDefinition): ResourceCollectionC
       label: filter.label,
       type: "text" as const,
     })),
-    ordering: definition.columns.map((column) => column.key),
-  };
-}
-
-function createBulkAction(definition: ResourceDefinition): ResourceBulkActionDefinition {
-  const mutation = definition.bulkRemove!;
-  if (mutation.method !== "POST") {
-    throw new Error(`${mutation.operationId} must use POST to participate in SDK bulk actions.`);
-  }
-  return {
-    id: sdkActionId(mutation.operationId),
-    label: mutation.label,
-    endpoint: mutation.path(""),
-    method: "POST",
-    tone: "danger",
-    selection_modes: ["explicit"],
-    confirmation: {
-      title: mutation.label,
-      word: "DELETE",
-      button_label: mutation.label,
-      warning: mutation.description,
-    },
-    options: [],
+    ordering: [],
   };
 }
 

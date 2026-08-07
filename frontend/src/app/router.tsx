@@ -16,7 +16,8 @@ import { PricingMarketDataPage } from "@/features/pricing-market-data/pricing-ma
 import { ResourceDetailPage } from "@/features/resources/resource-detail-page";
 import { ResourceListPage } from "@/features/resources/resource-list-page";
 import { resourceDefinitions } from "@/features/resources/resource-definitions";
-import { SettingsPage } from "@/features/settings/settings-page";
+import { ApiDiagnosticsPage } from "@/features/settings/settings-page";
+import { StaticSiteIframeTestHost } from "@/test/static-site-iframe-host";
 
 type LocationState = { pathname: string; search: string };
 type NavigateOptions = { replace?: boolean };
@@ -48,9 +49,12 @@ export function AppRouter() {
   }, []);
 
   const value = useMemo(() => ({ location, navigate }), [location, navigate]);
+  const testHost = import.meta.env.VITE_E2E_HOST === "true" && location.pathname === "/__iframe-host";
   return (
     <RouterContext.Provider value={value}>
-      <AppShell>{resolveRoute(location.pathname)}</AppShell>
+      {testHost
+        ? <StaticSiteIframeTestHost />
+        : <AppShell>{resolveRoute(location.pathname)}</AppShell>}
     </RouterContext.Provider>
   );
 }
@@ -88,7 +92,7 @@ export function AppLink({
 function resolveRoute(pathname: string): ReactNode {
   if (pathname === "/") return <Redirect to="/assets" />;
   if (pathname === "/pricing-market-data") return <PricingMarketDataPage />;
-  if (pathname === "/settings") return <SettingsPage />;
+  if (pathname === "/settings") return <ApiDiagnosticsPage />;
   for (const definition of resourceDefinitions) {
     if (pathname === definition.listRoute) return <ResourceListPage definition={definition} />;
     if (definition.detailRoute && pathname.startsWith(`${definition.listRoute}/`)) {

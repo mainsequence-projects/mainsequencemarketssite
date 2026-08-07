@@ -22,9 +22,10 @@ only the current theme ID/mode plus the optional public user UID.
 2. Keep automatic deployment disabled.
 3. Verify API CORS preflights for GET, POST, PATCH, and DELETE with credentials.
 4. Smoke-test authenticated standalone and embedded reads and mutations.
-5. Verify deep links and repeated theme updates.
-6. Retain the previous site/Command Center release for the agreed rollback window.
-7. Enable automatic deployment only after rollback has been exercised.
+5. Verify backend bulk discovery, optional preflight, execution, refresh, and selection cleanup.
+6. Verify deep links, the chrome-free embedded boundary, and repeated theme updates.
+7. Retain the previous site/Command Center release for the agreed rollback window.
+8. Enable automatic deployment only after rollback has been exercised.
 
 ## Rollback
 
@@ -37,3 +38,5 @@ Rollback is a release switch, not a source rewrite:
 5. record the failed commit, API/package versions, and observed contract mismatch.
 
 No production-readiness claim is valid until the authenticated target platform has been verified.
+Do not deploy this frontend ahead of the documented bulk-action backend contract unless the three
+affected collection capabilities are intentionally disabled for that release.

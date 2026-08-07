@@ -18,6 +18,62 @@ test.beforeEach(async ({ page }) => {
       });
       return;
     }
+    if (url.pathname === "/api/v1/asset-category/") {
+      await route.fulfill({
+        contentType: "application/json",
+        json: {
+          count: 2,
+          next: null,
+          previous: null,
+          results: [
+            { uid: "category-1", display_name: "Rates", unique_identifier: "rates" },
+            { uid: "category-2", display_name: "Credit", unique_identifier: "credit" },
+          ],
+        },
+      });
+      return;
+    }
+    if (url.pathname === "/api/v1/asset-category/bulk-actions/") {
+      await route.fulfill({
+        contentType: "application/json",
+        json: {
+          actions: [{
+            id: "bulk-delete-asset-categories",
+            label: "Delete selected",
+            endpoint: "/api/v1/asset-category/bulk-delete/",
+            preflight_endpoint: "/api/v1/asset-category/bulk-delete/preflight/",
+            method: "POST",
+            tone: "danger",
+            selection_modes: ["explicit"],
+            confirmation: {
+              title: "Delete asset categories",
+              word: "DELETE",
+              button_label: "Delete selected",
+              warning: "Deleted categories cannot be restored.",
+            },
+            options: [],
+          }],
+        },
+      });
+      return;
+    }
+    if (url.pathname === "/api/v1/asset-category/bulk-delete/preflight/") {
+      await route.fulfill({
+        contentType: "application/json",
+        json: {
+          allowed: true,
+          detail: "The selected categories can be deleted.",
+          matched_count: 2,
+          blockers: [],
+          warnings: [],
+        },
+      });
+      return;
+    }
+    if (url.pathname === "/api/v1/asset-category/bulk-delete/") {
+      await route.fulfill({ contentType: "application/json", json: { deleted: 2 } });
+      return;
+    }
     if (url.pathname === "/api/v1/pricing/market_data/") {
       await route.fulfill({
         contentType: "application/json",
@@ -57,6 +113,13 @@ test.beforeEach(async ({ page }) => {
       return;
     }
     if (url.pathname === "/api/v1/calendar/calendar-1/dates/") {
+      if (route.request().method() === "POST") {
+        await route.fulfill({
+          contentType: "application/json",
+          json: { uid: "date-2", local_date: "2026-08-07", is_business_day: true },
+        });
+        return;
+      }
       await route.fulfill({
         contentType: "application/json",
         json: {
@@ -101,14 +164,32 @@ test("normalizes pricing overview and its embedded resource collections", async 
   await expect(page.getByText("Production", { exact: true })).toBeVisible();
 });
 
-test("normalizes settings as a detail experience with runtime and metadata tabs", async ({ page }) => {
+test("normalizes API diagnostics as a detail experience with runtime and metadata tabs", async ({ page }) => {
   await page.goto("/settings");
-  await expect(page.getByRole("heading", { name: "Settings", level: 2 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "API Diagnostics", level: 2 })).toBeVisible();
   await expect(page.getByRole("definition").filter({ hasText: "http://127.0.0.1:2030" })).toBeVisible();
 
   await page.getByRole("tab", { name: "Public Metadata" }).click();
   await expect(page.getByText("getApiSettings", { exact: true })).toBeVisible();
   await expect(page.getByText("apps/v1", { exact: true })).toBeVisible();
+});
+
+test("uses discovered bulk actions with preflight, confirmation, refresh, and cleanup", async ({ page }) => {
+  await page.goto("/asset-categories");
+  await expect(page.getByText("Rates", { exact: true })).toBeVisible();
+
+  await page.getByRole("checkbox", { name: "Select all visible rows" }).check();
+  await expect(page.getByText("2 selected on this page.", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Actions" }).click();
+  await page.getByRole("menuitem", { name: "Delete selected" }).click();
+
+  const dialog = page.getByRole("dialog", { name: "Delete asset categories" });
+  await expect(dialog.getByText("The selected categories can be deleted.")).toBeVisible();
+  await dialog.getByRole("textbox", { name: "Confirmation word" }).fill("DELETE");
+  await dialog.getByRole("button", { name: "Delete selected" }).click();
+
+  await expect(page.getByText("Delete selected completed.")).toBeVisible();
+  await expect(page.getByText("2 selected on this page.", { exact: true })).toHaveCount(0);
 });
 
 test("renders related collections through an embedded SDK resource list", async ({ page }) => {
@@ -120,30 +201,33 @@ test("renders related collections through an embedded SDK resource list", async 
   await expect(page.getByText("2026-08-06", { exact: true })).toBeVisible();
 });
 
-test("receives SDK static-site context from an exact-origin iframe host", async ({ page }) => {
-  await page.route("http://127.0.0.1:3100/__iframe-host", (route) => route.fulfill({
-    contentType: "text/html",
-    body: `<!doctype html>
-      <html><body>
-        <iframe title="Markets" src="/assets"></iframe>
-        <script>
-          window.addEventListener("message", (event) => {
-            const frame = document.querySelector("iframe");
-            if (event.origin !== location.origin || event.source !== frame.contentWindow) return;
-            if (event.data?.channel !== "mainsequence.markets" || event.data?.type !== "ready") return;
-            event.source.postMessage({
-              channel: "mainsequence.markets",
-              version: 1,
-              type: "initialize",
-              payload: { theme: "light", themeId: "quartz-light", user: null },
-            }, location.origin);
-          });
-        </script>
-      </body></html>`,
-  }));
+test("places a custom domain action in the detail header and refreshes detail content", async ({ page }) => {
+  await page.goto("/calendars/calendar-1");
+  await page.getByRole("button", { name: "Add date" }).click();
 
+  const dialog = page.getByRole("dialog", { name: "Add date" });
+  await expect(dialog.getByText("createCalendarDate", { exact: true })).toBeVisible();
+  await dialog.getByRole("button", { name: "Add date" }).click();
+
+  await expect(page.getByRole("tab", { name: "Operation result" })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByText("date-2", { exact: true })).toBeVisible();
+  await page.getByRole("tab", { name: "Dates" }).click();
+  await expect(page.getByText("2026-08-06", { exact: true })).toBeVisible();
+});
+
+test("receives SDK static-site context from an exact-origin iframe host", async ({ page }) => {
   await page.goto("/__iframe-host");
-  const markets = page.frameLocator('iframe[title="Markets"]');
+  await expect(page.getByText("Host handshake ready")).toBeVisible();
+  const frame = page.locator('iframe[title="Markets SDK test host"]');
+  await expect(frame).toHaveAttribute("sandbox", "allow-forms allow-same-origin allow-scripts");
+  const markets = page.frameLocator('iframe[title="Markets SDK test host"]');
   await expect(markets.getByRole("heading", { name: "Assets", level: 1 })).toBeVisible();
   await expect(markets.locator("html")).toHaveAttribute("data-theme", "quartz-light");
+  await expect(markets.getByRole("navigation")).toHaveCount(0);
+  await expect(markets.locator(".topbar")).toHaveCount(0);
+  await expect(markets.getByText("MainSequence", { exact: true })).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Switch host theme" }).click();
+  await expect(markets.locator("html")).toHaveAttribute("data-theme", "main-sequence-space");
+  await expect(markets.locator("html")).toHaveAttribute("data-theme-mode", "dark");
 });

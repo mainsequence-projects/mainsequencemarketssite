@@ -2,11 +2,11 @@
 
 | Site route | Primary operation | Important related operations |
 | --- | --- | --- |
-| `/asset-categories` | `listAssetCategories` | create, detail, patch, delete, bulk delete |
+| `/asset-categories` | `listAssetCategories` | create, detail, patch, delete, discovered bulk delete |
 | `/assets` | `listAssets` | detail, summary, pricing details, related MetaTables, delete |
 | `/indices` | `listIndexes` | detail, summary, formulas, datasets, delete impact, patch/delete |
-| `/portfolios` | `listPortfolios` | detail, summary, weights, signal weights, values, bulk/delete |
-| `/portfolio-groups` | `listPortfolioGroups` | detail, members, add member, patch/delete/bulk delete |
+| `/portfolios` | `listPortfolios` | detail, summary, weights, signal weights, values, discovered bulk delete |
+| `/portfolio-groups` | `listPortfolioGroups` | detail, members, add member, patch/delete, discovered bulk delete |
 | `/portfolio-signals` | `listPortfolioSignals` | detail, create, patch, delete weights, delete metadata |
 | `/accounts` | `listAccounts` | summary, holdings, holdings by fund, target positions, add snapshots |
 | `/virtual-funds` | `listVirtualFunds` | detail, summary, holdings |
@@ -15,7 +15,7 @@
 | `/pricing-market-data/sets` | `listPricingMarketDataSets` | create, detail, patch/delete, set bindings |
 | `/pricing-market-data/bindings` | `listPricingMarketDataBindings` | create, detail, patch/delete |
 | `/calendars` | `listCalendars` | detail, summary, dates, sessions, events, create/patch/delete |
-| `/settings` | `getApiSettings` | OpenAPI and Adapter discovery links |
+| `/settings` | `getApiSettings` | Markets API Diagnostics, OpenAPI, and Adapter discovery links |
 
 Stable detail routes use `/:uid` under the corresponding list route.
 
@@ -25,5 +25,7 @@ Stable detail routes use `/:uid` under the corresponding list route.
   not present in the pinned OpenAPI contract.
 - Account deletion is not exposed because the pinned contract has no account DELETE operation.
 - Authentication and authorization come from the browser gateway, not persisted frontend state.
+- The three bulk-action discovery/preflight contracts are frontend-ready but require the coordinated
+  backend release described in the API contract document.
 - Active saved widget-workspace compatibility belongs to the independent widget-package cutover and
   is not proven by the site implementation.

@@ -7,7 +7,7 @@ import { Pencil, Play, Trash2 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
 import { ApiRecordView } from "@/components/api-record-view";
-import { MutationDialog } from "@/components/mutation-dialog";
+import { OperationDialog } from "@/components/operation-dialog";
 import { ErrorState, LoadingState } from "@/components/state-view";
 import { createMarketsResourceApplication } from "@/features/resources/resource-adapter";
 import type { DetailSectionDefinition, MutationDefinition, ResourceDefinition } from "@/features/resources/resource-definitions";
@@ -26,6 +26,7 @@ export function ResourceDetailPage({ definition, uid }: { definition: ResourceDe
   const [mutation, setMutation] = useState<OpenMutation>(null);
   const [actionResult, setActionResult] = useState<ActionResult | null>(null);
   const [activeTabId, setActiveTabId] = useState("overview");
+  const [detailContentRevision, setDetailContentRevision] = useState(0);
   const application = useMemo(
     () => createMarketsResourceApplication(definition),
     [definition],
@@ -76,6 +77,7 @@ export function ResourceDetailPage({ definition, uid }: { definition: ResourceDe
         operationId: openMutation.definition.operationId,
         value: result,
       });
+      setDetailContentRevision((value) => value + 1);
       setActiveTabId("operation-result");
       query.reload();
       return;
@@ -98,7 +100,9 @@ export function ResourceDetailPage({ definition, uid }: { definition: ResourceDe
           { id: uid, label: title },
         ]}
         error={query.error ? <ErrorState error={query.error} onRetry={query.reload} /> : undefined}
-        headerActions={<DetailActions definition={definition} onSelect={setMutation} />}
+        headerActions={record
+          ? <DetailActions definition={definition} onSelect={setMutation} />
+          : undefined}
         loading={query.loading}
         loadingDescription={`Requesting ${definition.detailOperationId ?? "the resource detail"} from the Markets API.`}
         loadingTitle={`Loading ${definition.singular}…`}
@@ -110,7 +114,13 @@ export function ResourceDetailPage({ definition, uid }: { definition: ResourceDe
         {!query.loading && !query.error ? (
           <>
             {activeTabId === "overview" ? <ApiRecordView value={query.data} /> : null}
-            {selectedDetail ? <DetailSection definition={selectedDetail} uid={safeUid} /> : null}
+            {selectedDetail ? (
+              <DetailSection
+                key={`${selectedDetail.operationId}:${detailContentRevision}`}
+                definition={selectedDetail}
+                uid={safeUid}
+              />
+            ) : null}
             {activeTabId === "operation-result" && actionResult ? (
               <ApiRecordView value={actionResult.value} />
             ) : null}
@@ -119,11 +129,12 @@ export function ResourceDetailPage({ definition, uid }: { definition: ResourceDe
       </ResourceDetailShell>
 
       {mutation ? (
-        <MutationDialog
+        <OperationDialog
           open
           title={mutation.definition.label}
           description={mutation.definition.description}
           operationId={mutation.definition.operationId}
+          operationKind={mutation.definition.method === "GET" ? "query" : "mutation"}
           initialValue={mutation.initialValue}
           destructive={mutation.definition.destructive}
           onClose={() => setMutation(null)}

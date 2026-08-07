@@ -20,4 +20,24 @@ describe("Markets route and operation inventory", () => {
   it("does not copy the dormant instruments surface", () => {
     expect(resourceDefinitions.some((definition) => definition.id === "instruments")).toBe(false);
   });
+
+  it("keeps custom actions explicit and delegates bulk action availability to the backend", () => {
+    const customActionCount = resourceDefinitions.reduce((count, definition) => (
+      count
+      + Number(Boolean(definition.create))
+      + Number(Boolean(definition.update))
+      + Number(Boolean(definition.remove))
+      + (definition.actions?.length ?? 0)
+    ), 0);
+    const bulkDiscovery = resourceDefinitions
+      .filter((definition) => definition.bulkActionsPath)
+      .map((definition) => [definition.id, definition.bulkActionsPath]);
+
+    expect(customActionCount).toBe(33);
+    expect(bulkDiscovery).toEqual([
+      ["asset-categories", "/api/v1/asset-category/bulk-actions/"],
+      ["portfolios", "/api/v1/portfolio/bulk-actions/"],
+      ["portfolio-groups", "/api/v1/portfolio-group/bulk-actions/"],
+    ]);
+  });
 });

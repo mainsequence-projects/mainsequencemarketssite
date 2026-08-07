@@ -15,7 +15,7 @@ const tabs = [
   { id: "metadata", label: "Public Metadata" },
 ] as const;
 
-export function SettingsPage() {
+export function ApiDiagnosticsPage() {
   const runtime = useRuntime();
   const { configuration } = runtime;
   const [activeTabId, setActiveTabId] = useState("overview");
@@ -38,13 +38,13 @@ export function SettingsPage() {
     <main className="content" id="main-content">
       <ResourceDetailShell
         activeTabId={activeTabId}
-        breadcrumbs={[{ id: "settings", label: "Settings" }]}
+        breadcrumbs={[{ id: "api-diagnostics", label: "API Diagnostics" }]}
         error={activeTabId === "metadata" && query.error
           ? <ErrorState error={query.error} onRetry={query.reload} />
           : undefined}
         loading={activeTabId === "metadata" && query.loading}
         loadingDescription="Requesting public runtime metadata from the Markets API."
-        loadingTitle="Loading API settings…"
+        loadingTitle="Loading API diagnostics…"
         onTabChange={setActiveTabId}
         summary={<EntitySummary summary={settingsSummary(runtime)} />}
         tabs={tabs}
@@ -80,7 +80,7 @@ export function SettingsPage() {
 
 function settingsSummary(runtime: ReturnType<typeof useRuntime>): EntitySummaryModel {
   return {
-    entity: { id: runtime.configuration.apiOrigin, type: "Markets API", title: "Settings" },
+    entity: { id: runtime.configuration.apiOrigin, type: "Markets API", title: "API Diagnostics" },
     badges: [{
       key: "mode",
       label: runtime.configuration.embedded ? "Embedded" : "Standalone",

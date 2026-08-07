@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Aligned the application with Command Center SDK 0.1.3 ownership: embedded mode now renders route
+  content without duplicating Main Command Center navigation, branding, settings, or session chrome.
+- Removed unsupported server-sorting declarations from all 12 resource collections.
+- Replaced three frontend-synthesized bulk-delete definitions with backend discovery, optional
+  preflight, reauthorization, and execution through the published SDK contracts.
+- Renamed the retained `/settings` experience to Markets API Diagnostics and kept it out of embedded
+  global navigation.
+- Distinguished input-driven GET operations from mutation dialogs, refreshed affected detail
+  content after domain actions, and moved remaining application colors onto SDK theme tokens.
+- Replaced the hand-written iframe E2E host with SDK `StaticSiteIframe` coverage for sandbox,
+  chrome ownership, handshake, and repeated theme propagation.
 - Completed the application-wide Command Center SDK refactor: all registries, entity details,
   related collections, Pricing Market Data, and Settings now use normalized SDK views.
 - Moved list/get/create/update/delete, detail-action, and explicit bulk transport behind normalized

@@ -2,15 +2,15 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   createMarketsResourceApplication,
-  normalizeMarketsCollection,
 } from "@/features/resources/resource-adapter";
 import {
   assetCategoriesDefinition,
   calendarsDefinition,
+  portfoliosDefinition,
 } from "@/features/resources/resource-definitions";
 
 describe("Markets SDK resource adapter", () => {
-  it("normalizes list inputs, authoritative pagination, controls, and bulk actions", async () => {
+  it("normalizes list inputs and authoritative pagination without advertising unsupported sorting", async () => {
     vi.stubEnv("VITE_API_BASE_URL", "https://markets.example.com");
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({
       count: 51,
@@ -35,7 +35,6 @@ describe("Markets SDK resource adapter", () => {
     expect(Object.fromEntries(url.searchParams)).toMatchObject({
       limit: "25",
       offset: "25",
-      ordering: "-display_name",
       response_format: "json",
       search: "rates",
       source: "official",
@@ -49,45 +48,190 @@ describe("Markets SDK resource adapter", () => {
       hasPreviousPage: false,
     });
     expect(result.controls?.search?.fields).toContain("display_name");
-    expect(result.bulkActions?.[0]).toMatchObject({
-      id: "bulk-delete-asset-categories",
-      selection_modes: ["explicit"],
-      tone: "danger",
+    expect(result.controls?.ordering).toEqual([]);
+    expect(result.bulkActions).toBeUndefined();
+    expect(application.columns.every((column) => column.sortableKey === undefined)).toBe(true);
+    expect(url.searchParams.has("ordering")).toBe(false);
+  });
+
+  it("discovers, preflights, and executes backend-owned bulk actions through SDK contracts", async () => {
+    vi.stubEnv("VITE_API_BASE_URL", "https://markets.example.com");
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse({
+        actions: [{
+          id: "bulk-delete-asset-categories",
+          label: "Delete selected",
+          endpoint: "/api/v1/asset-category/bulk-delete/",
+          preflight_endpoint: "/api/v1/asset-category/bulk-delete/preflight/",
+          method: "POST",
+          tone: "danger",
+          selection_modes: ["explicit"],
+          confirmation: {
+            title: "Delete asset categories",
+            word: "DELETE",
+            button_label: "Delete selected",
+            warning: "Deleted categories cannot be restored.",
+          },
+          options: [{
+            key: "delete_dependents",
+            type: "boolean",
+            default: false,
+            label: "Delete dependents",
+            description: "Also delete dependent records.",
+          }],
+        }],
+      }))
+      .mockResolvedValueOnce(jsonResponse({
+        allowed: true,
+        detail: "The selected categories can be deleted.",
+        matched_count: 2,
+        blockers: [],
+        warnings: [],
+      }))
+      .mockResolvedValueOnce(jsonResponse({ deleted: 2 }));
+    const application = createMarketsResourceApplication(assetCategoriesDefinition);
+    const controller = new AbortController();
+    const [action] = await application.adapter.listBulkActions!({
+      search: "rates",
+      filters: { source: "official" },
+    }, { signal: controller.signal });
+    const input = {
+      selection: { mode: "explicit", uids: ["category-1", "category-2"] },
+      options: { delete_dependents: true },
+      signal: controller.signal,
+    } as const;
+    const preflight = await application.adapter.preflightBulkAction!(action, input);
+    await application.adapter.executeBulkAction!(action, input);
+
+    const discoveryUrl = new URL(String(fetchMock.mock.calls[0][0]));
+    expect(discoveryUrl.pathname).toBe("/api/v1/asset-category/bulk-actions/");
+    expect(Object.fromEntries(discoveryUrl.searchParams)).toEqual({
+      source: "official",
+      search: "rates",
+    });
+    expect(fetchMock.mock.calls.slice(1).map(([url, init]) => ({
+      path: new URL(String(url)).pathname,
+      method: init?.method,
+      body: JSON.parse(String(init?.body)),
+      signal: init?.signal,
+    }))).toEqual([
+      {
+        path: "/api/v1/asset-category/bulk-delete/preflight/",
+        method: "POST",
+        body: {
+          selection: { mode: "explicit", uids: ["category-1", "category-2"] },
+          options: { delete_dependents: true },
+        },
+        signal: controller.signal,
+      },
+      {
+        path: "/api/v1/asset-category/bulk-delete/",
+        method: "POST",
+        body: {
+          selection: { mode: "explicit", uids: ["category-1", "category-2"] },
+          options: { delete_dependents: true },
+        },
+        signal: controller.signal,
+      },
+    ]);
+    expect(preflight).toMatchObject({ allowed: true, matchedCount: 2 });
+  });
+
+  it("preserves all-matching selection and normalized query scope when advertised", async () => {
+    vi.stubEnv("VITE_API_BASE_URL", "https://markets.example.com");
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse({
+        actions: [{
+          id: "bulk-delete-portfolios",
+          label: "Delete matching",
+          endpoint: "/api/v1/portfolio/bulk-delete/",
+          method: "POST",
+          selection_modes: ["explicit", "all_matching"],
+          options: [],
+        }],
+      }))
+      .mockResolvedValueOnce(jsonResponse({ deleted: 8 }));
+    const application = createMarketsResourceApplication(portfoliosDefinition);
+    const [action] = await application.adapter.listBulkActions!({
+      search: "income",
+      filters: { calendar_uid: "calendar-1" },
+    });
+
+    await application.adapter.executeBulkAction!(action, {
+      selection: {
+        mode: "all_matching",
+        query: { search: "income", filters: { calendar_uid: "calendar-1" } },
+      },
+      options: {},
+    });
+
+    expect(JSON.parse(String(fetchMock.mock.calls[1][1]?.body))).toEqual({
+      selection: {
+        mode: "all_matching",
+        query: { search: "income", filters: { calendar_uid: "calendar-1" } },
+      },
+      options: {},
     });
   });
 
-  it("serializes explicit bulk selection without inventing all-matching semantics", async () => {
+  it("normalizes blocked preflight results without discarding backend evidence", async () => {
     vi.stubEnv("VITE_API_BASE_URL", "https://markets.example.com");
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(
-      JSON.stringify({ deleted: 2 }),
-      { status: 200, headers: { "content-type": "application/json" } },
-    ));
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse({
+        actions: [{
+          id: "bulk-delete-asset-categories",
+          label: "Delete selected",
+          endpoint: "/api/v1/asset-category/bulk-delete/",
+          preflight_endpoint: "/api/v1/asset-category/bulk-delete/preflight/",
+          method: "POST",
+          selection_modes: ["explicit"],
+          options: [],
+        }],
+      }))
+      .mockResolvedValueOnce(jsonResponse({
+        allowed: false,
+        detail: "One category is protected.",
+        matched_count: 2,
+        blockers: ["Protected categories cannot be deleted."],
+        warnings: ["One category is used by an index."],
+        protected_uids: ["category-1"],
+      }));
     const application = createMarketsResourceApplication(assetCategoriesDefinition);
-    const listResult = normalizeMarketsCollection(
-      { count: 0, next: null, previous: null, results: [] },
-      { pageIndex: 0, pageSize: 25 },
-      undefined,
-      [{
-        id: "bulk-delete-asset-categories",
-        label: "Delete selected",
-        endpoint: "/api/v1/asset-category/bulk-delete/",
-        method: "POST",
-        selection_modes: ["explicit"],
-        options: [],
-      }],
-    );
-    const action = listResult.bulkActions![0];
-
-    await application.adapter.executeBulkAction!(action, {
+    const [action] = await application.adapter.listBulkActions!({ filters: {} });
+    const preflight = await application.adapter.preflightBulkAction!(action, {
       selection: { mode: "explicit", uids: ["category-1", "category-2"] },
       options: {},
     });
 
-    const [, requestInit] = fetchMock.mock.calls[0];
-    expect(requestInit?.method).toBe("POST");
-    expect(JSON.parse(String(requestInit?.body))).toEqual({
-      uids: ["category-1", "category-2"],
+    expect(preflight).toMatchObject({
+      allowed: false,
+      detail: "One category is protected.",
+      matchedCount: 2,
+      impacts: [
+        { message: "Protected categories cannot be deleted.", tone: "danger" },
+        { message: "One category is used by an index.", tone: "warning" },
+      ],
+      raw: { protected_uids: ["category-1"] },
     });
+  });
+
+  it("rejects invalid backend bulk-action discovery instead of trusting unsafe endpoints", async () => {
+    vi.stubEnv("VITE_API_BASE_URL", "https://markets.example.com");
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(jsonResponse({
+      actions: [{
+        id: "unsafe",
+        label: "Unsafe",
+        endpoint: "https://attacker.example.com/delete",
+        method: "POST",
+        selection_modes: ["explicit"],
+        options: [],
+      }],
+    }));
+    const application = createMarketsResourceApplication(assetCategoriesDefinition);
+
+    await expect(application.adapter.listBulkActions!({ filters: {} })).rejects.toThrow(
+      /Unsafe bulk-action endpoint/,
+    );
   });
 
   it("owns detail, create, update, and delete transport through the canonical adapter", async () => {

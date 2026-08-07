@@ -1,7 +1,7 @@
 import { ResourceListPage as CommandCenterResourceListPage } from "@dev-mainsequence/command-center-sdk/views";
 import { useMemo, useState } from "react";
 
-import { MutationDialog } from "@/components/mutation-dialog";
+import { OperationDialog } from "@/components/operation-dialog";
 import {
   createMarketsResourceApplication,
 } from "@/features/resources/resource-adapter";
@@ -33,6 +33,7 @@ export function ResourceListPage({
   const primaryActions = useMemo(() => definition.create ? [{
     id: definition.create.operationId,
     label: definition.create.label,
+    tone: "primary" as const,
     onSelect: () => setMutation({
       definition: definition.create!,
       initialValue: definition.create!.template,
@@ -64,7 +65,7 @@ export function ResourceListPage({
       />
 
       {mutation ? (
-        <MutationDialog
+        <OperationDialog
           open
           title={mutation.definition.label}
           description={mutation.definition.description}

@@ -2,10 +2,13 @@
 
 ## Ownership
 
-This repository owns the Markets product shell, navigation, route state, mutation dialogs, and
-domain content. The Command Center SDK owns generic resource-view composition and lifecycle,
-theme, and static-site iframe lifecycles. The `mainsequencemarkets` service owns financial/domain
-logic and the canonical OpenAPI contract. Command Center is the optional iframe host.
+This repository owns Markets route state, the optional standalone shell, operation dialogs, API
+transport, and domain content. When embedded, Main Command Center owns global navigation,
+application selection, account/global settings, session chrome, and global branding; the child
+renders only its selected route content. The Command Center SDK owns generic resource-view
+composition and lifecycle, theme, and static-site iframe lifecycles. The `mainsequencemarkets`
+service owns financial/domain logic, authorization, the canonical OpenAPI contract, and discovered
+bulk-action availability.
 
 The application has no runtime source-checkout imports and no Main Sequence Python SDK dependency.
 
@@ -21,16 +24,18 @@ The application has no runtime source-checkout imports and no Main Sequence Pyth
 - `src/themes/` applies presets from the SDK theme entrypoint.
 
 List/detail pages are driven by explicit resource definitions. `ResourceListPage` owns collection
-search, declared filters, sorting, authoritative pagination, selection, bulk-action confirmation,
-refresh, and standard states. `ResourceDetailShell` and `EntitySummary` own detail composition.
-The application adapter owns endpoint/query normalization, and every request carries an OpenAPI
-`operationId` without exposing credentials.
+search, declared filters, authoritative pagination, selection, discovered bulk-action confirmation,
+preflight, execution, refresh, and standard states. Sorting is not advertised because the current
+12 list operations do not declare an ordering parameter. `ResourceDetailShell` and `EntitySummary`
+own detail composition. The application adapter owns endpoint/query normalization. Pinned OpenAPI
+operations carry their operation ID; SDK bulk-contract requests use their published wire contracts
+until the backend OpenAPI release includes those endpoints.
 
 The same rule applies below the top-level routes. Ten related collections render as scoped embedded
 `ResourceListPage` applications; non-collection summaries, snapshots, delete-impact documents, and
-tabular frames remain domain content inside `ResourceDetailShell`. Pricing Market Data and Settings
-are singleton detail compositions, with their collections and metadata placed in controlled SDK
-tabs.
+tabular frames remain domain content inside `ResourceDetailShell`. Pricing Market Data and API
+Diagnostics are singleton detail compositions, with their collections and metadata placed in
+controlled SDK tabs.
 
 The SPA uses a small project-owned History API router. During implementation, the available React
 Router releases were covered by high-severity production advisories. Removing that dependency kept
@@ -44,8 +49,10 @@ to establish user identity. The client never creates an authorization header fro
 
 ## UI states
 
-Every registry receives loading, empty/no-results, pagination, selection, error, retry, and refresh
-behavior from the SDK. Mutation forms remain application-owned: they show their exact operation ID,
-validate JSON before submission, and require confirmation. Their list/get/create/update/delete,
-detail-action, and bulk transports run through normalized resource adapters. Destructive operations
-use a separate visual treatment.
+Every registry receives loading, empty/no-results, pagination, selection, error, retry, refresh,
+and discovered bulk-action behavior from the SDK. Operation forms remain application-owned: they
+show their exact operation ID, distinguish input-driven GET operations from mutations, validate
+JSON before submission, and require an explicit dialog action. List/get/create/update/delete and
+detail-action transports run through normalized resource adapters. Backend-discovered bulk actions
+use SDK discovery, optional preflight, reauthorization, execution, refresh, and cleanup. Destructive
+operations use SDK danger tokens and a separate semantic treatment.

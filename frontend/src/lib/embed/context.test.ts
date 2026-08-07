@@ -142,4 +142,27 @@ describe("Command Center static-site iframe client", () => {
     });
     expect(harness.removeEventListener).toHaveBeenCalledWith("message", expect.any(Function));
   });
+
+  it("rejects initialize messages that exceed the SDK payload limit", () => {
+    const harness = createBrowserWindow();
+    const onContext = vi.fn();
+    const onProtocolError = vi.fn();
+    connectToCommandCenter({
+      parentOrigin: "https://command-center.example.com",
+      browserWindow: harness.browserWindow,
+      onContext,
+      onProtocolError,
+    });
+
+    harness.dispatch({
+      source: harness.parent,
+      origin: "https://command-center.example.com",
+      data: initializeMessage({ themeId: "x".repeat(65_000) }),
+    } as unknown as MessageEvent<unknown>);
+
+    expect(onContext).not.toHaveBeenCalled();
+    expect(onProtocolError).toHaveBeenCalledWith(
+      "Static-site iframe payload exceeds the configured limit.",
+    );
+  });
 });

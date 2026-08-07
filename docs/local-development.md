@@ -42,4 +42,9 @@ npm run test:e2e
 ```
 
 The E2E suite intercepts the configured API origin with deterministic fixture responses. It never
-mutates a live Markets deployment.
+mutates a live Markets deployment. The test-only build flag mounts a real SDK `StaticSiteIframe`
+host at `/__iframe-host`; it is set by `npm run test:e2e` and is absent from ordinary builds.
+
+The frontend expects the backend bulk-action discovery endpoints documented in `api-contract.md`.
+Local API versions that do not provide them may still serve resources without bulk actions, but a
+discovery error is surfaced and the bulk action is not trusted or synthesized in the browser.

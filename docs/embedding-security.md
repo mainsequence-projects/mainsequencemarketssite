@@ -26,6 +26,12 @@ payload limit. `userUid` is untrusted display/routing context and never establis
 The parent must use the SDK `StaticSiteIframe` host so the same validation, reinitialization,
 timeout, sandbox, and teardown rules apply on both sides.
 
+After initialization, embedded mode renders only Markets route content. It does not render the
+standalone sidebar, topbar, MainSequence brand, API Diagnostics navigation, or gateway-session
+status. Main Command Center supplies global navigation, application selection, global settings,
+account/session chrome, and branding. The optional standalone shell remains available only when the
+window is not embedded.
+
 No session JWT, cookie, authorization header, email, name, organization, permissions, or backend
 credential may be added to the iframe context. API authentication remains an independent browser
 gateway responsibility.
@@ -39,3 +45,8 @@ gateway responsibility.
 
 The API must independently configure an exact CORS origin allowlist, credentials support, and all
 mutation methods used by the site.
+
+The browser suite mounts the child through the SDK `StaticSiteIframe` host and verifies the default
+`allow-forms allow-same-origin allow-scripts` sandbox, exact-origin handshake, anonymous user
+context, embedded chrome boundary, repeated theme updates, payload rejection, timeout behavior, and
+teardown.
