@@ -16,6 +16,27 @@ description: Set up, inspect, upgrade, or troubleshoot a TypeScript or React pro
 Treat the installed version as authoritative. Do not assume that a capability described by a plan,
 ADR, older checkout, or another application exists in the installed SDK.
 
+## Refresh Installed Guidance
+
+Package installation copies version-matched SDK skills into `.agents/skills/command-center` and
+makes a nonblocking MCP refresh when `MAINSEQUENCE_ACCESS_TOKEN` plus an MCP URL are available in
+the npm process. Do not assume that the best-effort platform lane succeeded merely because package
+installation completed.
+
+When current backend-owned platform guidance is required, run the strict workflow from the target
+project:
+
+```bash
+npx command-center-sdk skills sync --path .
+```
+
+Use `--dry-run` before writing and `--json` for machine-readable evidence. Resolve the MCP URL with
+`--mcp-url`, `COMMAND_CENTER_SDK_MCP_URL`, or `MAINSEQUENCE_ENDPOINT`; keep
+`MAINSEQUENCE_ACCESS_TOKEN` in the process environment and never put it in a command argument.
+Inspect `.agents/skills/command-center/PINNED_FROM.txt` for the package version and
+`.agents/skills/mainsequence/MCP_PINNED_FROM.txt` for the backend manifest. The installer owns only
+the recorded paths in each namespace and preserves unrelated project guidance.
+
 ## Choose Public Entrypoints
 
 - Use `/resource` for framework-neutral resource definitions and adapters.
@@ -32,10 +53,16 @@ ADR, older checkout, or another application exists in the installed SDK.
 - Use `/theme`, `/theme/presets`, and `/theme/data-viz` for theme behavior.
 - Use `/embed` and `/embed/react` for both deliberately separate iframe protocols: generic external
   widgets use `command-center-iframe@v1`; project-owned static sites use the numeric v1
-  `mainsequence.*` ready/initialize handshake. Never translate between them.
+  `mainsequence.*` handshake. Static sites call an authorized FastAPI ResourceRelease through the
+  client's high-level `fetchFastApi` method while the host injects `resolveFastApiCredential`.
+  The child consumes `StaticSiteFastApiTransportState` through `onFastApiStateChange` or
+  `getFastApiState`; the SDK owns bounded retry, credential refresh, and cancellation. Route that
+  work to `$integrate-static-site-iframe`; never translate between the two protocols.
 
 Keep framework-neutral modules free of React imports. Import browser CSS through documented package
-CSS exports and load each required bundle once.
+CSS exports and load each required bundle once. When importing the base theme stylesheet, route all
+semantic visual styling through `$theme-command-center-app` and make `command-center-sdk theme
+audit` part of the consumer's check/CI command.
 
 Use `$build-command-center-application` to make the application-level architecture decision and
 route each internal surface to its focused implementation skill.
@@ -58,4 +85,8 @@ workflows. Those skills configure published contracts; they do not extend the SD
 ## Verify
 
 Run the consumer typecheck and tests through published imports. Reproduce packaging failures from a
-packed or installed SDK rather than repository aliases.
+packed or installed SDK rather than repository aliases. For guidance synchronization failures,
+rerun `command-center-sdk skills sync --path . --json` so authentication, catalog validation, and
+filesystem ownership errors remain explicit. For themed consumers, run `command-center-sdk theme
+audit` and treat unknown tokens, literal fallbacks, and hardcoded semantic visual values as failed
+verification.

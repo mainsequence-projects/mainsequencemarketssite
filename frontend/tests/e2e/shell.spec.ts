@@ -223,6 +223,29 @@ test("receives SDK static-site context from an exact-origin iframe host", async 
   const markets = page.frameLocator('iframe[title="Markets SDK test host"]');
   await expect(markets.getByRole("heading", { name: "Assets", level: 1 })).toBeVisible();
   await expect(markets.locator("html")).toHaveAttribute("data-theme", "quartz-light");
+  const lightComputedTheme = await markets.locator(".embedded-app").evaluate((element) => {
+    const root = document.documentElement;
+    const resolveToken = (property: "backgroundColor" | "color" | "fontFamily", token: string) => {
+      const probe = document.createElement("span");
+      probe.style[property] = `var(${token})`;
+      root.append(probe);
+      const value = getComputedStyle(probe)[property];
+      probe.remove();
+      return value;
+    };
+    const computed = getComputedStyle(element);
+    return {
+      background: computed.backgroundColor,
+      backgroundToken: resolveToken("backgroundColor", "--background"),
+      color: computed.color,
+      colorToken: resolveToken("color", "--foreground"),
+      fontFamily: getComputedStyle(document.body).fontFamily,
+      fontToken: resolveToken("fontFamily", "--font-sans"),
+    };
+  });
+  expect(lightComputedTheme.background).toBe(lightComputedTheme.backgroundToken);
+  expect(lightComputedTheme.color).toBe(lightComputedTheme.colorToken);
+  expect(lightComputedTheme.fontFamily).toBe(lightComputedTheme.fontToken);
   await expect(markets.getByRole("navigation")).toHaveCount(0);
   await expect(markets.locator(".topbar")).toHaveCount(0);
   await expect(markets.getByText("MainSequence", { exact: true })).toHaveCount(0);
@@ -230,4 +253,18 @@ test("receives SDK static-site context from an exact-origin iframe host", async 
   await page.getByRole("button", { name: "Switch host theme" }).click();
   await expect(markets.locator("html")).toHaveAttribute("data-theme", "main-sequence-space");
   await expect(markets.locator("html")).toHaveAttribute("data-theme-mode", "dark");
+  const darkComputedTheme = await markets.locator(".embedded-app").evaluate((element) => {
+    const root = document.documentElement;
+    const probe = document.createElement("span");
+    probe.style.backgroundColor = "var(--background)";
+    root.append(probe);
+    const backgroundToken = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return {
+      background: getComputedStyle(element).backgroundColor,
+      backgroundToken,
+    };
+  });
+  expect(darkComputedTheme.background).toBe(darkComputedTheme.backgroundToken);
+  expect(darkComputedTheme.background).not.toBe(lightComputedTheme.background);
 });

@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Upgraded the editable Command Center SDK and managed skill bundle to 0.1.9, adopted the expanded
+  theme tokens and delegated FastAPI transport surface, and made the SDK theme audit a
+  production-build gate.
 - Aligned the application with Command Center SDK 0.1.3 ownership: embedded mode now renders route
   content without duplicating Main Command Center navigation, branding, settings, or session chrome.
 - Removed unsupported server-sorting declarations from all 12 resource collections.

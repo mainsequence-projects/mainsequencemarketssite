@@ -1,6 +1,6 @@
 ---
 name: implement-resource-collection-contract
-description: Implement or validate the existing normalized resource-collection contract published by @dev-mainsequence/command-center-sdk. Use in a backend, worker, CLI, or non-TypeScript integration that explicitly adopts the manifest-declared collection boundary, including authoritative pagination, controls, actions, schema validation, and conformance fixtures without changing the SDK contract.
+description: Implement or validate the existing normalized resource-collection contract published by @dev-mainsequence/command-center-sdk. Use in a backend, worker, CLI, or non-TypeScript integration that explicitly adopts the manifest-declared rows and authoritative pagination boundary, including schema validation and conformance fixtures without changing the SDK contract.
 ---
 
 # Implement The Resource Collection Contract
@@ -35,8 +35,10 @@ the normalized SDK type. Do not claim conformance for an unvalidated raw payload
 ## Implement The Existing Boundary
 
 1. Generate language-native models and validation from the selected schema.
-2. Preserve schema-required pagination, controls, actions, identity, nullability, and strictness
-   exactly as declared.
+2. Preserve schema-required rows, authoritative pagination, nullability, and strictness exactly as
+   declared. For a canonical backend-driven list, implement
+   `command-center.resource_discovery@v1` separately for identity, controls, columns, and actions;
+   do not copy those concerns into the collection envelope.
 3. Keep authorization, query construction, ORM behavior, and transport policy implementation-owned.
 4. Validate at the API, persistence, worker, or publication boundary that claims the contract.
 5. Keep the package version distinct from the contract version and schema `$id`.

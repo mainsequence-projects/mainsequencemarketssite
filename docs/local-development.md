@@ -34,6 +34,7 @@ must configure equivalent headers itself.
 ```bash
 npm run api:generate  # regenerate TypeScript from the pinned contract
 npm run api:check     # prove generated types are current
+npm run theme:audit   # enforce the installed SDK's closed theme-token contract
 npm run typecheck
 npm run lint
 npm test

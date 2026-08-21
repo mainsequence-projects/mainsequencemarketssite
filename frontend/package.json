@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "npm run theme:audit && tsc --noEmit && vite build",
     "preview": "vite preview",
     "api:generate": "openapi-typescript ../docs/contracts/mainsequencemarkets-openapi.json -o src/lib/api/generated.ts",
     "api:check": "node scripts/check-generated-api.mjs",
+    "theme:audit": "command-center-sdk theme audit --path src",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

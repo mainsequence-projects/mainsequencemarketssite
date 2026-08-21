@@ -1,6 +1,6 @@
 ---
 name: theme-command-center-app
-description: Apply, extend, review, or troubleshoot Command Center themes with @dev-mainsequence/command-center-sdk/theme and its CSS subpaths. Use for theme presets, CSS variables, data-visualization palettes, density and surface metrics, Tailwind integration, optional Markdown or library skins, or host-to-iframe theme propagation.
+description: Apply, extend, audit, review, or troubleshoot Command Center themes with @dev-mainsequence/command-center-sdk/theme and its CSS subpaths. Use for theme presets, strict CSS-variable consumption, typography, radii, status colors, data-visualization palettes, density and surface metrics, Tailwind integration, optional library skins, or host-to-iframe theme propagation.
 ---
 
 # Theme A Command Center Application
@@ -21,7 +21,34 @@ SDK CSS into application source or import unpublished theme files.
    for a controlled embed boundary.
 3. Use exported density, surface hierarchy, and data-visualization helpers instead of hardcoded
    approximations.
-4. Build application components from CSS variables so preset changes propagate consistently.
+4. Build every branded or semantic visual property from published CSS variables so preset changes
+   propagate consistently.
+
+## Enforce A Closed Theme Contract
+
+Once the base theme stylesheet is imported, treat its variables as a closed contract:
+
+- Use SDK variables for colors, surfaces, foregrounds, font family, font size, font weight, letter
+  spacing, text transformation, line height, radii, shadows, focus rings, statuses, density,
+  surface hierarchy, and chart palettes.
+- Do not invent an SDK-looking namespace such as `--ms-color-*`. Read the installed stylesheet;
+  core tokens are semantic names such as `--background`, `--card`, and `--primary`.
+- Do not add literal fallback values to SDK variables. A fallback conceals a misspelled, removed,
+  or unapplied token and makes theme switching appear only partially functional.
+- Permit consumer aliases only when every semantic value is derived from published variables, for
+  example `--app-panel: var(--card)` or a `color-mix` based on `--primary` and `transparent`.
+- Keep only structural layout decisions application-owned: grid placement, breakpoints, widths,
+  positioning, and intrinsic geometry. If the SDK publishes a metric for a property, use it.
+- Use `/theme/data-viz` helpers for chart series. Do not reuse one brand color for every series.
+
+Run the deterministic audit against authored CSS and make it part of the consumer check/CI command:
+
+```bash
+npx command-center-sdk theme audit --path src
+```
+
+Treat every audit violation as a build failure. Do not suppress it with a new literal or alias;
+either consume the published token or record a genuine missing SDK capability.
 
 ## Preserve Compatibility
 
@@ -33,6 +60,8 @@ application registries, and routing outside the theme layer.
 
 ## Verify
 
-Test at least one plain CSS consumer, active preset switching, fallback theme resolution, and every
-optional library skin changed by the task. Check contrast and nested-surface hierarchy in both dark
-and light presets when available.
+Run the theme audit. Test at least one plain CSS consumer, active preset switching, fallback theme
+resolution, and every optional library skin changed by the task. In a real browser, compare
+computed component values with root tokens across at least one dark and one light preset; merely
+observing the theme ID or root-variable update is not sufficient. Check typography, focus,
+statuses, charts, contrast, and nested-surface hierarchy.

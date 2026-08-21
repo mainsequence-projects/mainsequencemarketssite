@@ -22,6 +22,7 @@ set `VITE_COMMAND_CENTER_ORIGIN` to one exact parent origin.
 ```bash
 cd frontend
 npm run api:check
+npm run theme:audit
 npm run typecheck
 npm run lint
 npm test
@@ -39,9 +40,10 @@ npm run test:e2e
 - [Deployment and rollback](docs/deployment-and-rollback.md)
 - [Implementation plan](docs/implementation_tasks/001_mainsequence_markets_site_refactor.md)
 - [Full SDK refactor implementation](docs/implementation_tasks/002_command_center_sdk_normalization.md)
-- [SDK 0.1.3 alignment plan](docs/implementation_tasks/003_command_center_sdk_0_1_3_alignment.md)
+- [SDK alignment plan (0.1.3 baseline)](docs/implementation_tasks/003_command_center_sdk_0_1_3_alignment.md)
 
-The SDK 0.1.3 frontend alignment is implemented and locally verified. Production bulk actions remain
+The SDK alignment baseline is implemented, currently consumes editable SDK 0.1.9, and is locally
+verified. Production bulk actions remain
 gated on the backend discovery/preflight/execution contract documented under the API contract. The
 independent widget package, authenticated platform release, and Command Center source removal remain
 separate gated changes and are not claimed complete by this repository.

@@ -18,8 +18,11 @@ Make these cross-cutting decisions first:
 1. Integrate the complete application through the project-owned `mainsequence.*` version-one
    ready/initialize protocol. Route this work to `$integrate-static-site-iframe`. This embedding is
    the default for a Command Center application, not an optional alternative to its internal
-   pages.
-2. Apply SDK tokens, presets, density, and packaged styles through `$theme-command-center-app`.
+   pages. When the application calls a FastAPI ResourceRelease, use that same skill's delegated
+   `fetchFastApi` workflow instead of inventing authentication or postMessage behavior.
+2. Apply SDK tokens, presets, typography, density, surface hierarchy, data visualization, and
+   packaged styles through `$theme-command-center-app`. Treat its closed-token audit as a required
+   build gate whenever the base theme stylesheet is imported.
 3. Keep authentication, API clients, routing, permissions, notifications, persistence, and domain
    rules in the application or its backend. Inject them through published SDK extension points.
 4. Inspect the installed package version, exports, and declarations through
@@ -173,6 +176,8 @@ contracts or rebuild their owned behavior in this general skill.
 - Do not convert current-page selection into all-matching selection automatically.
 - Do not reproduce the main Command Center's global navigation or settings UI.
 - Do not duplicate canonical contracts or modify an installed SDK.
+- Do not invent theme variables, literal fallbacks, or application-owned replacements for
+  published semantic visual tokens.
 
 Verify the finished application against the architecture decision, the installed public exports,
 the focused skills, and the consumer typecheck and tests.

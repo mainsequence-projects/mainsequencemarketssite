@@ -109,7 +109,7 @@ describe("Command Center static-site iframe client", () => {
     expect(onContext).not.toHaveBeenCalled();
     expect(onProtocolError).toHaveBeenCalledTimes(3);
     expect(onProtocolError).toHaveBeenLastCalledWith(
-      "Rejected malformed static-site iframe initialize message.",
+      "Rejected malformed static-site iframe message.",
     );
   });
 

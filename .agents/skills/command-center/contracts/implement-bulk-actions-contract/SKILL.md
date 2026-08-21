@@ -18,7 +18,9 @@ SDK-source maintenance task.
 
 1. Resolve the installed `@dev-mainsequence/command-center-sdk` version.
 2. Open `@dev-mainsequence/command-center-sdk/contracts/manifest.json`.
-3. Select the bulk-action entries by their manifest roles and contract IDs.
+3. Select the bulk-action entries by their manifest roles and contract IDs. For a canonical
+   resource list, also select `command-center.resource_discovery@v1`; its `bulk_actions` array
+   reuses the same action definition while identity, controls, and columns share one response.
 4. Load every referenced schema and all valid and invalid fixtures indexed by those entries.
 5. Use `docs/backend-contracts.md` only for lifecycle guidance; the manifest bundle remains the
    sole wire definition.
@@ -28,7 +30,8 @@ document.
 
 ## Implement The Lifecycle
 
-1. Discover only actions currently authorized for the caller and scope.
+1. Discover only actions currently authorized for the caller and scope. A canonical resource list
+   returns them from `<collection>/discovery/`; do not add a new `/bulk-actions/` metadata endpoint.
 2. Preserve the selected explicit or all-matching selection object through preflight and execution.
 3. Treat preflight as optional unless the discovered action advertises it.
 4. Reauthorize discovery, preflight when present, and execution independently.
