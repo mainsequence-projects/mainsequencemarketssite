@@ -1,6 +1,6 @@
 ---
 name: build-command-center-application
-description: Design, build, migrate, or review a Command Center-compatible application and select the correct @dev-mainsequence/command-center-sdk surfaces before implementation. Use when deciding how an application embedded in the main Command Center should compose resource lists, custom and discovered actions, resource details, Table or Pro Table widgets, other built-in or custom widgets, workspaces, themes, backend contracts, and application-level or widget-level iframe integration. Route each selected surface to its focused implementation skill without redefining SDK contracts.
+description: Design, build, migrate, or review a Command Center-compatible application and select the correct @dev-mainsequence/command-center-sdk surfaces before implementation. Use when deciding how a standalone or embedded application should compose application navigation, resource lists, custom and discovered actions, resource details, widgets, workspaces, themes, backend contracts, and application-level or widget-level iframe integration. Route each selected surface to its focused implementation skill without redefining SDK contracts.
 ---
 
 # Build A Command Center Application
@@ -12,6 +12,12 @@ Center. The main Command Center owns global navigation, application selection, a
 settings UI, session chrome, and global branding. Do not reproduce its left navigation, top
 navigation, settings module, account controls, or application switcher inside the child
 application.
+
+For a standalone product shell, or for navigation genuinely owned inside the child application,
+use the public `/navigation` hierarchy and controlled React primitives. They provide an expandable
+application rail, grouped sub-applications, and destinations without owning routes or access
+policy. When embedded in the main Command Center, do not mirror the host's applications in a
+second rail; model only the child's own internal hierarchy.
 
 Make these cross-cutting decisions first:
 
@@ -39,6 +45,7 @@ Choose the highest-level composition that owns the required lifecycle:
 
 | Requirement | SDK surface | Focused skill |
 | --- | --- | --- |
+| Application rail with grouped sub-applications | `/navigation` controlled primitives | This skill |
 | Domain-object collection | `ResourceListPage` | `$build-resource-list` |
 | One domain object with summary, actions, and sections | `ResourceDetailShell` | `$build-resource-detail` |
 | Searchable single or multiple choice | `ResourcePicker` | `$build-resource-picker` |
@@ -53,6 +60,22 @@ Choose the highest-level composition that owns the required lifecycle:
 
 Do not select a primitive because it can display similar pixels. Select the composition whose
 contract owns the behavior, state, and reuse boundary.
+
+## Design Application Navigation
+
+Use `NavigationApplicationDefinition` for a top-level product application,
+`NavigationSubApplicationDefinition` for a labeled section or contributed sub-application, and
+`NavigationDestinationDefinition` for the actual routed surface. Keep IDs stable and unique.
+
+Use `ApplicationNavigationShell` when the SDK can own the rail/panel layout. Use
+`ApplicationRail` and `ApplicationNavigationPanel` separately when the consumer already owns
+positioning. `ApplicationRailItem` is the narrow primitive for an existing host rail.
+
+Keep state controlled. Filter inaccessible definitions before render, pass active and open IDs from
+the consumer, and translate `NavigationIntent` into the consumer router. Use
+`defineNavigationContribution` plus `composeNavigationApplications` when one package contributes
+a complete sub-application to another package owned application. Do not import another application
+registry, router, auth store, or private sidebar components.
 
 ## Design Resource Collections
 

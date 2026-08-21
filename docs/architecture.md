@@ -5,8 +5,9 @@
 This repository owns Markets route state, the optional standalone shell, operation dialogs, API
 transport, and domain content. When embedded, Main Command Center owns global navigation,
 application selection, account/global settings, session chrome, and global branding; the child
-renders only its selected route content. The Command Center SDK owns generic resource-view
-composition and lifecycle, theme, and static-site iframe lifecycles. The `mainsequencemarkets`
+renders only its selected route content. The Command Center SDK owns controlled standalone
+navigation, generic resource-view composition and lifecycle, theme, and static-site iframe
+lifecycles. The `mainsequencemarkets`
 service owns financial/domain logic, authorization, the canonical OpenAPI contract, and discovered
 bulk-action availability.
 
@@ -22,6 +23,22 @@ The application has no runtime source-checkout imports and no Main Sequence Pyth
 - `src/lib/api/` contains the exact-origin client and generated OpenAPI types;
 - `src/lib/embed/` connects the SDK static-site iframe client; and
 - `src/themes/` applies presets from the SDK theme entrypoint.
+
+Standalone navigation uses SDK `ApplicationNavigationShell` from the public `/navigation`
+entrypoint. The rail contains five stable application sections—Assets, Portfolios, Managed
+Accounts, Pricing, and Platform—and each section opens its own grouped destination submenu. SDK
+navigation intents are translated into the project-owned History API router. The SDK owns the rail,
+grouped destination panel, active state, collapse behavior, keyboard navigation, focus treatment,
+and tooltips. The application owns route paths. It has no application-owned theme or session
+controls: standalone mode uses the default SDK preset, while embedded mode follows every theme
+context update sent by the Command Center SDK host.
+Embedded mode intentionally omits this shell because Main Command Center owns global application
+navigation.
+
+The SDK theme preset is applied to the document root in both standalone and embedded modes. SDK
+navigation and resource views consume the published variables directly, while application CSS uses
+only published tokens or aliases derived from them. The closed-token theme audit is a required build
+gate.
 
 List/detail pages are driven by explicit resource definitions. `ResourceListPage` owns collection
 search, declared filters, authoritative pagination, selection, discovered bulk-action confirmation,
@@ -44,8 +61,10 @@ deep-link and back/forward behavior while producing a clean production dependenc
 ## Request boundary
 
 The API client accepts only application-relative paths and resolves them against one validated
-`VITE_API_BASE_URL`. Requests use `credentials: include`, allowing the deployed authenticated gateway
-to establish user identity. The client never creates an authorization header from iframe context.
+`VITE_API_BASE_URL` in standalone mode. Embedded requests use the configured FastAPI release UID and
+the SDK's memory-only delegated credential transport. Standalone requests use
+`credentials: include`, allowing the deployed authenticated gateway to establish user identity. The
+application never constructs or persists a delegated authorization header itself.
 
 ## UI states
 

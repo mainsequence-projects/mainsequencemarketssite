@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+- Added a VS Code full-stack compound debugger that launches the sibling Markets FastAPI
+  development app on port 8001 and this Vite frontend on port 3010 with an explicit local API
+  origin.
+- Upgraded the repository-contained Command Center SDK and project skill bundle to `0.1.11`,
+  replaced the custom standalone sidebar with the public controlled application navigation shell,
+  and retained SDK theme presets and closed tokens across all chrome and content surfaces.
+- Removed the misleading standalone gateway-session indicator and application-owned theme switch;
+  standalone mode uses the default SDK preset and iframe mode follows repeated host theme updates.
+- Added the `main`-only **Main Sequence Markets** static-site workflow with automatic redeployment,
+  Vite/Node 24 build settings, SPA fallback, and the stable production Markets FastAPI release UID.
+  The SDK resolves the release's current opaque RPC endpoint at request time, so automatic API
+  redeployments remain linked without copying a runtime URL into the browser build.
+- Replaced embedded direct-origin browser requests with SDK `fetchFastApi` delegated transport and
+  explicit lifecycle diagnostics; standalone local development retains the exact-origin transport.
+- Replaced the workstation-local SDK dependency with a repository-contained SDK `0.1.11` archive so
+  remote builds are reproducible while the corresponding registry release is unavailable.
+
 - Upgraded the editable Command Center SDK and managed skill bundle to 0.1.9, adopted the expanded
   theme tokens and delegated FastAPI transport surface, and made the SDK theme audit a
   production-build gate.

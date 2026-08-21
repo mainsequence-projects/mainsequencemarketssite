@@ -18,6 +18,7 @@ const tabs = [
 export function ApiDiagnosticsPage() {
   const runtime = useRuntime();
   const { configuration } = runtime;
+  const { apiOrigin } = configuration;
   const [activeTabId, setActiveTabId] = useState("overview");
   const load = useCallback(
     (signal: AbortSignal) => apiGet<unknown>("/api/v1/settings/", undefined, {
@@ -33,7 +34,6 @@ export function ApiDiagnosticsPage() {
     ["OpenAPI JSON", "/openapi.json"],
     ["Adapter contract", "/.well-known/command-center/connection-contract"],
   ] as const;
-
   return (
     <main className="content" id="main-content">
       <ResourceDetailShell
@@ -55,20 +55,31 @@ export function ApiDiagnosticsPage() {
         {activeTabId === "overview" ? (
           <ApiRecordView value={{
             api_origin: configuration.apiOrigin,
-            authentication: "Authenticated browser gateway session",
-            credentials_policy: "include",
+            fastapi_release_uid: configuration.fastApiReleaseUid,
+            authentication: configuration.embedded
+              ? "SDK delegated FastAPI credential"
+              : "Authenticated browser gateway session",
+            credentials_policy: configuration.embedded ? "memory-only delegated bearer" : "include",
             embed_mode: configuration.embedded ? "embedded" : "standalone",
+            transport_status: runtime.fastApiState?.status ?? (configuration.embedded ? "idle" : "direct"),
             public_user_context: runtime.userUid,
           }} />
         ) : null}
         {activeTabId === "documentation" ? (
-          <div className="docs-links">
-            {docs.map(([label, path]) => (
-              <a href={new URL(path, configuration.apiOrigin).toString()} target="_blank" rel="noreferrer" key={path}>
-                <span>{label}<small>{path}</small></span><ExternalLink size={15} />
-              </a>
-            ))}
-          </div>
+          apiOrigin ? (
+            <div className="docs-links">
+              {docs.map(([label, path]) => (
+                <a href={new URL(path, apiOrigin).toString()} target="_blank" rel="noreferrer" key={path}>
+                  <span>{label}<small>{path}</small></span><ExternalLink size={15} />
+                </a>
+              ))}
+            </div>
+          ) : (
+            <ApiRecordView value={{
+              access: "API documentation is available through the delegated embedded transport.",
+              paths: Object.fromEntries(docs),
+            }} />
+          )
         ) : null}
         {activeTabId === "metadata" && !query.loading && !query.error
           ? <ApiRecordView value={query.data} />
@@ -79,22 +90,33 @@ export function ApiDiagnosticsPage() {
 }
 
 function settingsSummary(runtime: ReturnType<typeof useRuntime>): EntitySummaryModel {
+  const target = runtime.configuration.embedded
+    ? runtime.configuration.fastApiReleaseUid
+    : runtime.configuration.apiOrigin;
   return {
-    entity: { id: runtime.configuration.apiOrigin, type: "Markets API", title: "API Diagnostics" },
+    entity: { id: target ?? "markets-api", type: "Markets API", title: "API Diagnostics" },
     badges: [{
       key: "mode",
       label: runtime.configuration.embedded ? "Embedded" : "Standalone",
       tone: "info",
     }],
     inline_fields: [{
-      key: "api-origin",
-      label: "Exact API origin",
-      value: runtime.configuration.apiOrigin,
+      key: "api-target",
+      label: runtime.configuration.embedded ? "FastAPI release UID" : "Exact API origin",
+      value: target ?? "Not configured",
       kind: "code",
     }],
     highlight_fields: [
-      { key: "authentication", label: "Authentication", value: "Browser gateway" },
-      { key: "credentials", label: "Credentials policy", value: "include" },
+      {
+        key: "authentication",
+        label: "Authentication",
+        value: runtime.configuration.embedded ? "Delegated FastAPI" : "Browser gateway",
+      },
+      {
+        key: "credentials",
+        label: "Credentials policy",
+        value: runtime.configuration.embedded ? "Memory-only SDK credential" : "include",
+      },
       { key: "contract", label: "API contract", value: "apps/v1 · 128 operations" },
     ],
     stats: [],

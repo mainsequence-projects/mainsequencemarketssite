@@ -155,7 +155,7 @@ credentials, abort signals, and mapping its OpenAPI operations into the SDK adap
 “Hardcoded action” here means a business operation whose label, OpenAPI operation ID, HTTP method,
 path builder, description, request template, or destructive flag is configured in
 `frontend/src/features/resources/resource-definitions.ts`. It does not mean ordinary UI mechanics
-such as opening the mobile menu, retrying a failed query, or changing a standalone-only theme.
+such as collapsing navigation, retrying a failed query, or dismissing a dialog.
 
 At the baseline there were **36** configured business actions: 7 create, 7 update, 10 single-delete,
 9 domain, and 3 bulk-delete actions. The frontend exposed no separate row-menu actions. The
@@ -444,7 +444,8 @@ All frontend-owned phases were implemented against editable
 `@dev-mainsequence/command-center-sdk@0.1.3`.
 
 - Embedded mode now renders a thin route-content root. The standalone sidebar, topbar, branding,
-  API Diagnostics navigation, and gateway-session status never render after iframe initialization.
+  API Diagnostics navigation, and application-owned theme/session controls never render after iframe
+  initialization.
 - The standalone shell and all stable route paths remain available. `/settings` is presented as
   Markets **API Diagnostics**, not Command Center global settings.
 - All top-level resource columns have no `sortableKey`, normalized controls advertise

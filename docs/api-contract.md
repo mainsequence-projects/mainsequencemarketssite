@@ -47,7 +47,10 @@ refresh the pinned OpenAPI document and generated types before deployment.
 
 ## Authentication
 
-Authentication is performed by the deployed browser gateway. The site sends cookies through
-`credentials: include`; it does not accept credentials from iframe messages. A 401 or 403 produces
-an application access state. The static-site iframe protocol does not transport authentication
-state or credentials.
+Standalone authentication is performed by the deployed browser gateway and uses
+`credentials: include`. Embedded requests call the configured FastAPI ResourceRelease through the
+SDK `fetchFastApi` transport. The host resolves a narrow, short-lived delegated credential, while
+the SDK owns acquisition, refresh, retry, cancellation, headers, and in-memory cleanup. Application
+code never parses credential messages, constructs an authorization header, persists a token, or
+falls back to a general platform session credential. Transport lifecycle and 401/403/404/runtime
+states are surfaced through the SDK status contract.

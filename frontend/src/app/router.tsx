@@ -45,7 +45,11 @@ export function AppRouter() {
     if (options.replace) window.history.replaceState(null, "", destination);
     else window.history.pushState(null, "", destination);
     setLocation(readLocation());
-    window.scrollTo({ top: 0, behavior: "instant" });
+    const navigationContent = document.querySelector<HTMLElement>(
+      ".cc-application-navigation-shell__content",
+    );
+    if (navigationContent) navigationContent.scrollTo({ top: 0, behavior: "instant" });
+    else window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
   const value = useMemo(() => ({ location, navigate }), [location, navigate]);

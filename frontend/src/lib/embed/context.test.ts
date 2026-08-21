@@ -116,7 +116,7 @@ describe("Command Center static-site iframe client", () => {
   it("applies repeated and anonymous context updates and tears down the listener", () => {
     const harness = createBrowserWindow();
     const onContext = vi.fn();
-    const disconnect = connectToCommandCenter({
+    const connection = connectToCommandCenter({
       parentOrigin: "https://command-center.example.com",
       browserWindow: harness.browserWindow,
       onContext,
@@ -132,7 +132,7 @@ describe("Command Center static-site iframe client", () => {
         data: message,
       } as unknown as MessageEvent<unknown>);
     }
-    disconnect();
+    connection.disconnect();
 
     expect(onContext).toHaveBeenCalledTimes(2);
     expect(onContext).toHaveBeenLastCalledWith({

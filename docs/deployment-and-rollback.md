@@ -1,31 +1,50 @@
 # Deployment and rollback
 
-## Build artifact
+## Platform-managed static release
+
+The repository owns `.mainsequence/workflows/static-site.yaml`. It declares one release named
+**Main Sequence Markets** with `root_directory: frontend`, Vite on Node.js 24, `dist` output, SPA
+routing through `/index.html`, and automatic redeployment for every synchronized commit on the
+registered `main` ProjectBranch. No development branch or second site release is declared.
+
+The only application-specific browser build input is `VITE_FASTAPI_RELEASE_UID`, which selects the
+Main Sequence Markets API release used by the SDK's delegated FastAPI transport. The platform owns
+and injects the reserved `VITE_COMMAND_CENTER_ORIGIN`; do not commit or derive a Command Center
+hostname. The FastAPI release UID is stable across automatic API redeployments; the SDK resolves
+the current opaque RPC endpoint and delegated credential at request time. Do not add a copied
+runtime URL to the platform workflow. Build inputs are public and must never contain credentials.
+
+The deployable SDK is stored as `frontend/vendor/dev-mainsequence-command-center-sdk-0.1.11.tgz` and
+referenced through a repository-relative `file:` dependency. This is temporary until an equivalent
+SDK version is published; remote builds must never depend on a workstation path.
+
+## Local standalone build
 
 Build with production origins injected at compile time:
 
 ```bash
 cd frontend
 VITE_API_BASE_URL=https://markets-api.example.com \
-VITE_COMMAND_CENTER_ORIGIN=https://command-center.example.com \
 npm run build
 ```
 
-Publish `frontend/dist/` as an SPA. The static host must fall back to `index.html` for every route in
-the compatibility table and must emit the security headers documented under embedding and security.
-The Command Center viewer must render the launch URL with the SDK `StaticSiteIframe` host and pass
-only the current theme ID/mode plus the optional public user UID.
+The platform workflow publishes `frontend/dist/` as an SPA and falls back to `/index.html`. The
+Command Center viewer must render the launch URL with the SDK `StaticSiteIframe` host, pass only the
+current theme ID/mode plus the optional public user UID, and provide the delegated FastAPI
+credential resolver.
 
 ## First cutover
 
 1. Pin the intended site commit and API release.
-2. Keep automatic deployment disabled.
-3. Verify API CORS preflights for GET, POST, PATCH, and DELETE with credentials.
+2. Confirm the repository workflow was accepted for the exact `main` ProjectBranch.
+3. Verify the target FastAPI release admits the deployed static-site origin and that delegated GET,
+   POST, PATCH, and DELETE requests succeed.
 4. Smoke-test authenticated standalone and embedded reads and mutations.
 5. Verify backend bulk discovery, optional preflight, execution, refresh, and selection cleanup.
 6. Verify deep links, the chrome-free embedded boundary, and repeated theme updates.
 7. Retain the previous site/Command Center release for the agreed rollback window.
-8. Enable automatic deployment only after rollback has been exercised.
+8. Confirm the automatic deployment run is terminal and the active deployment matches the pushed
+   commit.
 
 ## Rollback
 

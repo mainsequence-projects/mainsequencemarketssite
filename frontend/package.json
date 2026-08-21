@@ -13,10 +13,10 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:e2e": "VITE_API_BASE_URL=http://127.0.0.1:2030 VITE_COMMAND_CENTER_ORIGIN=http://127.0.0.1:3100 VITE_E2E_HOST=true npm run build && playwright test"
+    "test:e2e": "VITE_API_BASE_URL=http://127.0.0.1:2030 VITE_COMMAND_CENTER_ORIGIN=http://127.0.0.1:3100 VITE_FASTAPI_RELEASE_UID=00000000-0000-4000-8000-000000000203 VITE_E2E_HOST=true npm run build && playwright test"
   },
   "dependencies": {
-    "@dev-mainsequence/command-center-sdk": "file:../../../../../code/MainSequenceClientSide/command-center-sdk/command-center-sdk",
+    "@dev-mainsequence/command-center-sdk": "file:vendor/dev-mainsequence-command-center-sdk-0.1.11.tgz",
     "lucide-react": "1.24.0",
     "react": "19.2.7",
     "react-dom": "19.2.7"

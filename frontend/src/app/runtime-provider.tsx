@@ -1,3 +1,4 @@
+import type { StaticSiteFastApiTransportState } from "@dev-mainsequence/command-center-sdk/embed";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import type { RuntimeConfiguration } from "@/config/runtime";
@@ -14,7 +15,7 @@ type RuntimeContextValue = {
   userUid: string | null;
   initialized: boolean;
   embedError: string | null;
-  toggleStandaloneTheme: () => void;
+  fastApiState: StaticSiteFastApiTransportState | null;
 };
 
 const RuntimeContext = createContext<RuntimeContextValue | null>(null);
@@ -31,6 +32,7 @@ export function RuntimeProvider({
   const [userUid, setUserUid] = useState<string | null>(null);
   const [initialized, setInitialized] = useState(!configuration.embedded);
   const [embedError, setEmbedError] = useState<string | null>(null);
+  const [fastApiState, setFastApiState] = useState<StaticSiteFastApiTransportState | null>(null);
 
   useEffect(() => {
     applyMarketsTheme(themeId, themeMode);
@@ -38,7 +40,7 @@ export function RuntimeProvider({
 
   useEffect(() => {
     if (!configuration.embedded || !configuration.commandCenterOrigin) return;
-    return connectToCommandCenter({
+    const connection = connectToCommandCenter({
       parentOrigin: configuration.commandCenterOrigin,
       onContext: (context: EmbedContext) => {
         setThemeMode(context.themeMode);
@@ -47,8 +49,10 @@ export function RuntimeProvider({
         setEmbedError(null);
         setInitialized(true);
       },
+      onFastApiStateChange: setFastApiState,
       onProtocolError: setEmbedError,
     });
+    return () => connection.disconnect();
   }, [configuration.commandCenterOrigin, configuration.embedded]);
 
   const value = useMemo<RuntimeContextValue>(() => ({
@@ -58,12 +62,8 @@ export function RuntimeProvider({
     userUid,
     initialized,
     embedError,
-    toggleStandaloneTheme: () => {
-      if (configuration.embedded) return;
-      setThemeMode((current) => current === "dark" ? "light" : "dark");
-      setThemeId("");
-    },
-  }), [configuration, embedError, initialized, themeId, themeMode, userUid]);
+    fastApiState,
+  }), [configuration, embedError, fastApiState, initialized, themeId, themeMode, userUid]);
 
   return <RuntimeContext.Provider value={value}>{children}</RuntimeContext.Provider>;
 }

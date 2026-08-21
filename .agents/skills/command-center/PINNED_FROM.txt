@@ -1,9 +1,9 @@
 schema=2
 library_name=@dev-mainsequence/command-center-sdk
 namespace=command-center
-pinned_version=0.1.9
-skills_path=/Users/jose/code/MainSequenceClientSide/command-center-sdk/command-center-sdk/agent_scaffold/skills
-copied_at_utc=2026-08-21T08:06:48.923Z
+pinned_version=0.1.11
+skills_path=/Users/jose/mainsequence-dev/main-sequence-workbench/projects/mainsequencemarketssite-6d85f6f8-08cd-4d49-bc6d-9142c24cf294/frontend/node_modules/@dev-mainsequence/command-center-sdk/agent_scaffold/skills
+copied_at_utc=2026-08-21T13:32:43.182Z
 command=command-center-sdk skills install
 skill_path=contracts/implement-adapter-from-api-contract
 skill_path=contracts/implement-bulk-actions-contract

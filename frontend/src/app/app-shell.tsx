@@ -1,75 +1,205 @@
 import {
+  ApplicationNavigationShell,
+  defineNavigationApplication,
+  type NavigationIntent,
+} from "@dev-mainsequence/command-center-sdk/navigation";
+import {
   BarChart3,
-  BookOpen,
   Building2,
   CalendarDays,
-  ChevronRight,
   Database,
   FolderKanban,
   Layers3,
   LineChart,
-  Menu,
-  Moon,
   Orbit,
-  PanelLeftClose,
   Settings2,
   Shapes,
   Signal,
-  Sun,
   WalletCards,
 } from "lucide-react";
-import { useState, type ComponentType, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import { useRuntime } from "@/app/runtime-provider";
-import { AppLink, useRouter } from "@/app/router";
+import { useRouter } from "@/app/router";
 
-type NavigationItem = { label: string; path: string; icon: ComponentType<{ size?: number }> };
-type NavigationGroup = { label: string; items: NavigationItem[] };
+const destinationRoutes = {
+  "asset-categories": "/asset-categories",
+  assets: "/assets",
+  indices: "/indices",
+  portfolios: "/portfolios",
+  "portfolio-groups": "/portfolio-groups",
+  "portfolio-signals": "/portfolio-signals",
+  accounts: "/accounts",
+  "virtual-funds": "/virtual-funds",
+  "pricing-curves": "/pricing-curves",
+  "pricing-market-data": "/pricing-market-data",
+  calendars: "/calendars",
+  "api-diagnostics": "/settings",
+} as const;
 
-const navigation: NavigationGroup[] = [
-  {
-    label: "Assets",
-    items: [
-      { label: "Asset Categories", path: "/asset-categories", icon: Shapes },
-      { label: "Master List", path: "/assets", icon: Database },
-      { label: "Indices", path: "/indices", icon: BarChart3 },
-    ],
-  },
-  {
-    label: "Portfolios",
-    items: [
-      { label: "Portfolios", path: "/portfolios", icon: FolderKanban },
-      { label: "Portfolio Groups", path: "/portfolio-groups", icon: Layers3 },
-      { label: "Signals", path: "/portfolio-signals", icon: Signal },
-    ],
-  },
-  {
-    label: "Managed Accounts",
-    items: [
-      { label: "Accounts", path: "/accounts", icon: Building2 },
-      { label: "Virtual Funds", path: "/virtual-funds", icon: WalletCards },
-    ],
-  },
-  {
-    label: "Pricing",
-    items: [
-      { label: "Curves", path: "/pricing-curves", icon: LineChart },
-      { label: "Market Data", path: "/pricing-market-data", icon: Orbit },
-    ],
-  },
-  {
-    label: "Platform",
-    items: [
-      { label: "Calendars", path: "/calendars", icon: CalendarDays },
-      { label: "API Diagnostics", path: "/settings", icon: Settings2 },
-    ],
-  },
-];
+type MarketsDestinationId = keyof typeof destinationRoutes;
+
+const destinationLabels: Record<MarketsDestinationId, string> = {
+  "asset-categories": "Asset Categories",
+  assets: "Master List",
+  indices: "Indices",
+  portfolios: "Portfolios",
+  "portfolio-groups": "Portfolio Groups",
+  "portfolio-signals": "Signals",
+  accounts: "Accounts",
+  "virtual-funds": "Virtual Funds",
+  "pricing-curves": "Curves",
+  "pricing-market-data": "Market Data",
+  calendars: "Calendars",
+  "api-diagnostics": "API Diagnostics",
+};
+
+const destinationApplicationIds: Record<MarketsDestinationId, string> = {
+  "asset-categories": "assets",
+  assets: "assets",
+  indices: "assets",
+  portfolios: "portfolios",
+  "portfolio-groups": "portfolios",
+  "portfolio-signals": "portfolios",
+  accounts: "managed-accounts",
+  "virtual-funds": "managed-accounts",
+  "pricing-curves": "pricing",
+  "pricing-market-data": "pricing",
+  calendars: "platform",
+  "api-diagnostics": "platform",
+};
+
+const assetsApplication = defineNavigationApplication({
+  id: "assets",
+  label: "Assets",
+  description: "Asset definitions and market reference data.",
+  icon: Shapes,
+  defaultDestinationId: "assets",
+  subApplications: [
+    {
+      id: "reference-data",
+      label: "Reference Data",
+      destinations: [
+        { id: "asset-categories", label: destinationLabels["asset-categories"], icon: Shapes, order: 10 },
+        { id: "assets", label: destinationLabels.assets, icon: Database, order: 20 },
+        { id: "indices", label: destinationLabels.indices, icon: BarChart3, order: 30 },
+      ],
+    },
+  ],
+});
+
+const portfoliosApplication = defineNavigationApplication({
+  id: "portfolios",
+  label: "Portfolios",
+  description: "Portfolio definitions, groups, and signals.",
+  icon: FolderKanban,
+  defaultDestinationId: "portfolios",
+  subApplications: [
+    {
+      id: "portfolio-management",
+      label: "Portfolio Management",
+      destinations: [
+        { id: "portfolios", label: destinationLabels.portfolios, icon: FolderKanban, order: 10 },
+        { id: "portfolio-groups", label: destinationLabels["portfolio-groups"], icon: Layers3, order: 20 },
+        { id: "portfolio-signals", label: destinationLabels["portfolio-signals"], icon: Signal, order: 30 },
+      ],
+    },
+  ],
+});
+
+const managedAccountsApplication = defineNavigationApplication({
+  id: "managed-accounts",
+  label: "Managed Accounts",
+  description: "Managed accounts and virtual funds.",
+  icon: Building2,
+  defaultDestinationId: "accounts",
+  subApplications: [
+    {
+      id: "account-management",
+      label: "Account Management",
+      destinations: [
+        { id: "accounts", label: destinationLabels.accounts, icon: Building2, order: 10 },
+        { id: "virtual-funds", label: destinationLabels["virtual-funds"], icon: WalletCards, order: 20 },
+      ],
+    },
+  ],
+});
+
+const pricingApplication = defineNavigationApplication({
+  id: "pricing",
+  label: "Pricing",
+  description: "Pricing curves and market-data configuration.",
+  icon: LineChart,
+  defaultDestinationId: "pricing-curves",
+  subApplications: [
+    {
+      id: "pricing-data",
+      label: "Pricing Data",
+      destinations: [
+        { id: "pricing-curves", label: destinationLabels["pricing-curves"], icon: LineChart, order: 10 },
+        { id: "pricing-market-data", label: destinationLabels["pricing-market-data"], icon: Orbit, order: 20 },
+      ],
+    },
+  ],
+});
+
+const platformApplication = defineNavigationApplication({
+  id: "platform",
+  label: "Platform",
+  description: "Calendars and API diagnostics.",
+  icon: Settings2,
+  defaultDestinationId: "calendars",
+  subApplications: [
+    {
+      id: "platform-tools",
+      label: "Platform Tools",
+      destinations: [
+        { id: "calendars", label: destinationLabels.calendars, icon: CalendarDays, order: 10 },
+        { id: "api-diagnostics", label: destinationLabels["api-diagnostics"], icon: Settings2, order: 20 },
+      ],
+    },
+  ],
+});
+
+const navigationApplications = [
+  assetsApplication,
+  portfoliosApplication,
+  managedAccountsApplication,
+  pricingApplication,
+  platformApplication,
+] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { location } = useRouter();
+  const { location, navigate } = useRouter();
   const runtime = useRuntime();
-  const [navigationOpen, setNavigationOpen] = useState(false);
+  const activeDestinationId = findActiveDestinationId(location.pathname);
+  const activeApplicationId = activeDestinationId
+    ? destinationApplicationIds[activeDestinationId]
+    : null;
+  const currentTitle = activeDestinationId ? destinationLabels[activeDestinationId] : "Overview";
+  const [navigationCollapsed, setNavigationCollapsed] = useState(false);
+  const [openNavigation, setOpenNavigation] = useState<{
+    applicationId: string | null;
+    pathname: string;
+  }>(() => ({
+    applicationId: activeApplicationId ?? assetsApplication.id,
+    pathname: location.pathname,
+  }));
+  const openApplicationId = openNavigation.pathname === location.pathname
+    ? openNavigation.applicationId
+    : (activeApplicationId ?? assetsApplication.id);
+
+  function handleOpenApplicationChange(applicationId: string | null) {
+    setOpenNavigation({ applicationId, pathname: location.pathname });
+  }
+
+  function handleNavigate(intent: NavigationIntent) {
+    const destinationId = intent.destinationId as MarketsDestinationId;
+    const path = destinationRoutes[destinationId];
+    if (!path || destinationApplicationIds[destinationId] !== intent.applicationId) return;
+    navigate(path);
+    setOpenNavigation({ applicationId: intent.applicationId, pathname: path });
+  }
 
   if (!runtime.initialized) {
     return (
@@ -92,84 +222,36 @@ export function AppShell({ children }: { children: ReactNode }) {
     );
   }
 
-  const currentTitle = findCurrentTitle(location.pathname);
   return (
-    <div className="app-shell" data-navigation-open={navigationOpen || undefined}>
+    <ApplicationNavigationShell
+      activeApplicationId={activeApplicationId}
+      activeDestinationId={activeDestinationId}
+      applications={navigationApplications}
+      ariaLabel="Main Sequence Markets applications"
+      className="markets-navigation-shell"
+      collapsed={navigationCollapsed}
+      contentClassName="markets-navigation-content"
+      label="Sections"
+      onCollapsedChange={setNavigationCollapsed}
+      onNavigate={handleNavigate}
+      onOpenApplicationChange={handleOpenApplicationChange}
+      openApplicationId={openApplicationId}
+    >
       <a className="skip-link" href="#main-content">Skip to content</a>
-      <aside className="sidebar">
-        <div className="brand">
-          <div className="brand-mark"><LineChart size={18} /></div>
-          <div><strong>MainSequence</strong><span>Markets</span></div>
-          <button className="sidebar-close" type="button" onClick={() => setNavigationOpen(false)} aria-label="Close navigation">
-            <PanelLeftClose size={18} />
-          </button>
-        </div>
-        <nav className="navigation" aria-label="Markets navigation">
-          {navigation.map((group) => (
-            <section className="nav-group" key={group.label}>
-              <p>{group.label}</p>
-              {group.items.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <AppLink
-                    className="nav-link"
-                    key={item.path}
-                    to={item.path}
-                    data-active={isNavigationActive(location.pathname, item.path) || undefined}
-                    onClick={() => setNavigationOpen(false)}
-                  >
-                    <Icon size={16} />
-                    <span>{item.label}</span>
-                    <ChevronRight size={13} />
-                  </AppLink>
-                );
-              })}
-            </section>
-          ))}
-        </nav>
-        <footer className="sidebar-footer">
-          <BookOpen size={15} />
-          <span><strong>API contract</strong><small>128 operations · apps/v1</small></span>
-        </footer>
-      </aside>
-      {navigationOpen ? <button className="nav-scrim" type="button" onClick={() => setNavigationOpen(false)} aria-label="Close navigation" /> : null}
       <div className="shell-column">
         <header className="topbar">
           <div className="topbar-heading">
-            <button className="mobile-menu" type="button" onClick={() => setNavigationOpen(true)} aria-label="Open navigation">
-              <Menu size={19} />
-            </button>
             <div><span>Markets</span><strong>{currentTitle}</strong></div>
-          </div>
-          <div className="topbar-actions">
-            <button className="icon-button" type="button" onClick={runtime.toggleStandaloneTheme} aria-label="Toggle color theme">
-              {runtime.themeMode === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
-            <div className="session-status">
-              <span className="status-dot" />
-              <div>
-                <strong>Standalone</strong>
-                <small>Gateway session</small>
-              </div>
-            </div>
           </div>
         </header>
         {children}
       </div>
-    </div>
+    </ApplicationNavigationShell>
   );
 }
 
-function isNavigationActive(pathname: string, itemPath: string): boolean {
-  if (itemPath === "/pricing-market-data") return pathname.startsWith(itemPath);
-  return pathname === itemPath || pathname.startsWith(`${itemPath}/`);
-}
-
-function findCurrentTitle(pathname: string): string {
-  for (const group of navigation) {
-    for (const item of group.items) {
-      if (isNavigationActive(pathname, item.path)) return item.label;
-    }
-  }
-  return "Overview";
+function findActiveDestinationId(pathname: string): MarketsDestinationId | null {
+  const destination = (Object.entries(destinationRoutes) as Array<[MarketsDestinationId, string]>)
+    .find(([, path]) => pathname === path || pathname.startsWith(`${path}/`));
+  return destination?.[0] ?? null;
 }

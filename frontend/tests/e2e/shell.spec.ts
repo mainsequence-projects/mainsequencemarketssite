@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   await page.route("http://127.0.0.1:2030/**", async (route) => {
@@ -142,15 +142,43 @@ test.beforeEach(async ({ page }) => {
 
 test("renders the standalone Markets shell and asset registry", async ({ page }) => {
   await page.goto("/assets");
+  const sectionRail = page.locator("[data-cc-navigation-rail]");
+  await expect(sectionRail).toBeVisible();
+  await expect(sectionRail.locator("[data-cc-navigation-application]")).toHaveCount(5);
+  for (const section of ["Assets", "Portfolios", "Managed Accounts", "Pricing", "Platform"]) {
+    await expect(sectionRail.getByRole("button", { name: section, exact: true })).toBeVisible();
+  }
+  await expect(sectionRail.getByRole("button", { name: "Assets", exact: true }))
+    .toHaveAttribute("aria-current", "page");
+  await expect(page.locator("[data-app-navigation-panel]")).toBeVisible();
+  await expect(page.getByText("Reference Data", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Master List", exact: true })).toHaveAttribute("aria-current", "page");
   await expect(page.getByRole("heading", { name: "Assets", exact: true, level: 1 })).toBeVisible();
   await expect(page.getByText("US91282CJL63")).toBeVisible();
   await expect(page.getByText("MX0MGO0000D8")).toBeVisible();
   await expect(page.getByText("2 assets")).toBeVisible();
+
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "main-sequence-space");
+  const navigationTheme = await readNavigationTheme(page.locator("[data-cc-navigation-rail]"));
+  expect(navigationTheme.background).toBe(navigationTheme.backgroundToken);
+  expect(navigationTheme.color).toBe(navigationTheme.colorToken);
+  await expect(page.getByRole("button", { name: "Toggle color theme" })).toHaveCount(0);
+  await expect(page.getByText("Gateway session", { exact: true })).toHaveCount(0);
+
+  await sectionRail.getByRole("button", { name: "Portfolios", exact: true }).click();
+  await expect(page.getByText("Portfolio Management", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Portfolio Groups", exact: true })).toBeVisible();
+  await sectionRail.getByRole("button", { name: "Assets", exact: true }).click();
+  await page.getByRole("button", { name: "Asset Categories", exact: true }).click();
+  await expect(page).toHaveURL(/\/asset-categories$/);
+  await expect(page.getByRole("heading", { name: "Asset Categories", exact: true, level: 1 })).toBeVisible();
 });
 
 test("supports direct deep-route navigation", async ({ page }) => {
   await page.goto("/portfolios/portfolio-1");
-  await expect(page.getByRole("button", { name: "Portfolios" })).toBeVisible();
+  await expect(page.getByLabel("Breadcrumb").getByRole("button", { name: "Portfolios" })).toBeVisible();
+  await expect(page.locator("[data-cc-navigation-destination]", { hasText: "Portfolios" }))
+    .toHaveAttribute("aria-current", "page");
   await expect(page.getByText("getPortfolio", { exact: true })).toBeVisible();
 });
 
@@ -186,9 +214,14 @@ test("uses discovered bulk actions with preflight, confirmation, refresh, and cl
   const dialog = page.getByRole("dialog", { name: "Delete asset categories" });
   await expect(dialog.getByText("The selected categories can be deleted.")).toBeVisible();
   await dialog.getByRole("textbox", { name: "Confirmation word" }).fill("DELETE");
+  const execution = page.waitForResponse((response) => (
+    response.request().method() === "POST"
+    && new URL(response.url()).pathname === "/api/v1/asset-category/bulk-delete/"
+  ));
   await dialog.getByRole("button", { name: "Delete selected" }).click();
 
-  await expect(page.getByText("Delete selected completed.")).toBeVisible();
+  expect((await execution).ok()).toBe(true);
+  await expect(dialog).toHaveCount(0);
   await expect(page.getByText("2 selected on this page.", { exact: true })).toHaveCount(0);
 });
 
@@ -222,6 +255,7 @@ test("receives SDK static-site context from an exact-origin iframe host", async 
   await expect(frame).toHaveAttribute("sandbox", "allow-forms allow-same-origin allow-scripts");
   const markets = page.frameLocator('iframe[title="Markets SDK test host"]');
   await expect(markets.getByRole("heading", { name: "Assets", level: 1 })).toBeVisible();
+  await expect(markets.getByText("US91282CJL63", { exact: true })).toBeVisible();
   await expect(markets.locator("html")).toHaveAttribute("data-theme", "quartz-light");
   const lightComputedTheme = await markets.locator(".embedded-app").evaluate((element) => {
     const root = document.documentElement;
@@ -268,3 +302,24 @@ test("receives SDK static-site context from an exact-origin iframe host", async 
   expect(darkComputedTheme.background).toBe(darkComputedTheme.backgroundToken);
   expect(darkComputedTheme.background).not.toBe(lightComputedTheme.background);
 });
+
+async function readNavigationTheme(locator: Locator) {
+  return locator.evaluate((element) => {
+    const root = document.documentElement;
+    const resolveToken = (property: "backgroundColor" | "color", token: string) => {
+      const probe = document.createElement("span");
+      probe.style[property] = `var(${token})`;
+      root.append(probe);
+      const value = getComputedStyle(probe)[property];
+      probe.remove();
+      return value;
+    };
+    const computed = getComputedStyle(element);
+    return {
+      background: computed.backgroundColor,
+      backgroundToken: resolveToken("backgroundColor", "--sidebar"),
+      color: computed.color,
+      colorToken: resolveToken("color", "--sidebar-foreground"),
+    };
+  });
+}

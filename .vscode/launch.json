@@ -1,0 +1,60 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Markets Frontend (3010)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "3010",
+        "--strictPort"
+      ],
+      "cwd": "${workspaceFolder}/frontend",
+      "env": {
+        "VITE_API_BASE_URL": "http://127.0.0.1:8001"
+      },
+      "console": "integratedTerminal",
+      "outputCapture": "std",
+      "autoAttachChildProcesses": true,
+      "serverReadyAction": {
+        "pattern": "Local:\\s+(https?://[^\\s\\u001b]+)",
+        "uriFormat": "%s",
+        "action": "debugWithChrome"
+      }
+    },
+    {
+      "name": "Markets API (8001)",
+      "type": "debugpy",
+      "request": "launch",
+      "python": "${workspaceFolder}/../mainsequencemarkets-fc293183-14af-4322-bd9d-5c0f91caecca/.venv/bin/python",
+      "module": "uvicorn",
+      "args": [
+        "apps.v1.dev_cors:app",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8001",
+        "--reload"
+      ],
+      "cwd": "${workspaceFolder}/../mainsequencemarkets-fc293183-14af-4322-bd9d-5c0f91caecca",
+      "envFile": "${workspaceFolder}/../mainsequencemarkets-fc293183-14af-4322-bd9d-5c0f91caecca/.env",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "subProcess": true
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Markets: Full Stack",
+      "configurations": ["Markets API (8001)", "Markets Frontend (3010)"],
+      "stopAll": true
+    }
+  ]
+}

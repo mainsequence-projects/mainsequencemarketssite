@@ -1,5 +1,6 @@
 import { loadRuntimeConfiguration } from "@/config/runtime";
 import type { MarketsOperationId } from "@/lib/api/contracts";
+import { getCommandCenterConnection } from "@/lib/embed/context";
 
 export type ApiMethod = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
 export type QueryValue = string | number | boolean | null | undefined;
@@ -24,25 +25,42 @@ export async function apiRequest<T>(input: {
   body?: unknown;
   signal?: AbortSignal;
 }): Promise<T> {
-  const url = resolveApiUrl(input.path, input.query);
+  const configuration = loadRuntimeConfiguration();
+  const path = resolveApiPath(input.path, input.query);
   const hasBody = input.body !== undefined;
+  const requestInit: RequestInit = {
+    method: input.method,
+    headers: {
+      accept: "application/json",
+      ...(hasBody ? { "content-type": "application/json" } : {}),
+    },
+    body: hasBody ? JSON.stringify(input.body) : undefined,
+    cache: "no-store",
+    signal: input.signal,
+  };
   let response: Response;
   try {
-    response = await fetch(url, {
-      method: input.method,
-      credentials: "include",
-      headers: {
-        accept: "application/json",
-        ...(hasBody ? { "content-type": "application/json" } : {}),
-      },
-      body: hasBody ? JSON.stringify(input.body) : undefined,
-      cache: "no-store",
-      signal: input.signal,
-    });
+    if (configuration.embedded) {
+      const connection = getCommandCenterConnection();
+      if (!connection || !configuration.fastApiReleaseUid) {
+        throw new Error("The delegated FastAPI iframe transport is not initialized.");
+      }
+      response = await connection.fetchFastApi({
+        resourceReleaseUid: configuration.fastApiReleaseUid,
+        path,
+      }, requestInit);
+    } else {
+      response = await fetch(resolveApiUrl(path, {}, configuration.apiOrigin ?? undefined), {
+        ...requestInit,
+        credentials: "include",
+      });
+    }
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") throw error;
     throw new ApiError(
-      "The Markets API could not be reached. Check the configured origin and CORS allowlist.",
+      configuration.embedded
+        ? "The delegated Markets API transport could not be established. Check release access and origin admission."
+        : "The Markets API could not be reached. Check the configured origin and CORS allowlist.",
       0,
       { cause: error instanceof Error ? error.message : String(error) },
       input.operationId,
@@ -87,17 +105,27 @@ export function resolveApiUrl(
   query: Record<string, QueryValue> = {},
   rawBaseUrl?: string,
 ): string {
-  const normalizedPath = normalizePath(path);
+  const normalizedPath = resolveApiPath(path, query);
   const origin = rawBaseUrl
     ? loadRuntimeConfiguration({ apiBaseUrl: rawBaseUrl, embedded: false }).apiOrigin
     : loadRuntimeConfiguration().apiOrigin;
+  if (!origin) throw new Error("A standalone API origin is required to resolve an absolute URL.");
   const url = new URL(normalizedPath, origin);
+  return url.toString();
+}
+
+export function resolveApiPath(
+  path: string,
+  query: Record<string, QueryValue> = {},
+): string {
+  const normalizedPath = normalizePath(path);
+  const url = new URL(normalizedPath, "https://markets.invalid");
   for (const [key, value] of Object.entries(query)) {
     if (value !== undefined && value !== null && value !== "") {
       url.searchParams.set(key, String(value));
     }
   }
-  return url.toString();
+  return `${url.pathname}${url.search}`;
 }
 
 function normalizePath(path: string): string {
