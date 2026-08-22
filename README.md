@@ -8,8 +8,12 @@ iframe lifecycle come from `@dev-mainsequence/command-center-sdk`.
 
 ## Run locally
 
+Use Node.js 24. The frontend package enforces the `24.x` engine range and includes an `.nvmrc`
+for local version managers.
+
 ```bash
 cd frontend
+nvm use
 npm install
 cp .env.example .env.local
 npm run dev

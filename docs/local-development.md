@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Node.js 22 or newer
+- Node.js 24 (`frontend/.nvmrc` is the local runtime pin)
 - npm
 - a reachable `mainsequencemarkets` `apps/v1` API
 

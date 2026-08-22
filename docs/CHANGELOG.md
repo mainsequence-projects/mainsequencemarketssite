@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Pinned local development and npm package execution to Node.js 24, matching the static-site
+  deployment runtime.
 - Added a VS Code full-stack compound debugger that launches the sibling Markets FastAPI
   development app on port 8001 and this Vite frontend on port 3010 with an explicit local API
   origin.
