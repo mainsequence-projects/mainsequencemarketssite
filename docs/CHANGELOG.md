@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Upgraded the vendored Command Center SDK and installed skill bundle to `0.1.13`, refreshed the
+  FastAPI OpenAPI artifact to 158 operations, and switched account and pricing-curve activation to
+  canonical row details while retaining summaries as separate detail tabs.
+- Completed the strict collection cutover for all 25 backend lists and sibling discovery routes;
+  the site has no response-format switch, legacy pagination normalizer, or standalone bulk-action
+  discovery fallback.
 - Pinned local development and npm package execution to Node.js 24, matching the static-site
   deployment runtime.
 - Added a VS Code full-stack compound debugger that launches the sibling Markets FastAPI

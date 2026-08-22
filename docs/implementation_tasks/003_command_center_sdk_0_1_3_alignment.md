@@ -3,7 +3,7 @@
 - **Status:** frontend implementation complete; backend contract and deployment pending
 - **Planning date:** 2026-08-07
 - **Frontend completion date:** 2026-08-07
-- **Application:** `frontend/`
+- **Application:** repository root
 - **SDK:** editable `@dev-mainsequence/command-center-sdk@0.1.3`
 - **Static-site protocol:** `mainsequence.*`, numeric version `1`
 - **Supersedes:** the application-shell ownership and SDK-version assumptions in task 002
@@ -154,7 +154,7 @@ credentials, abort signals, and mapping its OpenAPI operations into the SDK adap
 
 “Hardcoded action” here means a business operation whose label, OpenAPI operation ID, HTTP method,
 path builder, description, request template, or destructive flag is configured in
-`frontend/src/features/resources/resource-definitions.ts`. It does not mean ordinary UI mechanics
+`src/features/resources/resource-definitions.ts`. It does not mean ordinary UI mechanics
 such as collapsing navigation, retrying a failed query, or dismissing a dialog.
 
 At the baseline there were **36** configured business actions: 7 create, 7 update, 10 single-delete,
@@ -234,7 +234,7 @@ named and tested accordingly.
 ### Bulk actions synthesized in the frontend at baseline — 3
 
 These are the hardcoded actions that must not remain static. Today
-`frontend/src/features/resources/resource-adapter.ts` converts `bulkRemove` into a
+`src/features/resources/resource-adapter.ts` converts `bulkRemove` into a
 `ResourceBulkActionDefinition`, hardcodes explicit-only selection and confirmation copy, then calls
 the endpoint directly.
 
@@ -283,8 +283,8 @@ declare that parameter, so the UI promises a server capability the backend has n
 | Market Data Sets | `listPricingMarketDataSets` | `status`, `set_key` | Remove sorting. |
 | Market Data Bindings | `listPricingMarketDataBindings` | `market_data_set_uid`, `concept_key` | Remove sorting. |
 
-`limit`, `offset`, and the applicable `response_format` parameter remain transport controls and are
-omitted from the table for readability. Sorting may be restored per operation only after the
+`limit` and `offset` remain transport controls and are omitted from the table for readability.
+Sorting may be restored per operation only after the
 OpenAPI contract formally declares its accepted keys and the backend applies authoritative ordering.
 
 ## Implementation Workstreams
@@ -299,7 +299,7 @@ OpenAPI contract formally declares its accepted keys and the backend applies aut
 
 ### Phase 1 — Correct the embedded application boundary
 
-Files centered on: `frontend/src/app/app-shell.tsx`, runtime/bootstrap code, router tests, and shell
+Files centered on: `src/app/app-shell.tsx`, runtime/bootstrap code, router tests, and shell
 styles.
 
 - branch on the normalized runtime `embedded` state after iframe initialization;
@@ -312,7 +312,7 @@ styles.
 
 ### Phase 2 — Make collection capabilities truthful
 
-Files centered on: `frontend/src/features/resources/resource-adapter.ts`, resource definitions, and
+Files centered on: `src/features/resources/resource-adapter.ts`, resource definitions, and
 adapter/list tests.
 
 - remove universal `sortableKey`, `controls.ordering`, and serialized `ordering`;
@@ -343,17 +343,15 @@ Frontend files centered on: resource adapter/definitions and bulk-action tests. 
 separate coordinated change against the published contracts.
 
 - remove `bulkRemove`-to-definition synthesis after discovery is available;
-- add `listBulkActions`, `preflightBulkAction`, and `executeBulkAction` through the SDK adapter
-  contract;
+- add `discover`, `preflightBulkAction`, and `executeBulkAction` through the SDK adapter contract;
 - validate serialized discovery/preflight/execution messages with the installed schema fixtures;
 - preserve explicit selection for the three current actions;
 - add all-matching only when a backend-discovered action advertises it; and
 - test blocked preflight, changed authorization, partial failure, success refresh, and selection
   cleanup.
 
-The frontend must not claim this phase complete until the backend discovery contract exists. Until
-then, the current explicit-only bulk behavior may be retained behind a documented temporary
-compatibility flag or bulk UI may be disabled; silent permanent fallback is not acceptable.
+The frontend must not claim this phase complete until the backend discovery contract exists. No
+compatibility flag or fallback discovery route is allowed.
 
 ### Phase 5 — Complete detail and related-resource lifecycle coverage
 
@@ -440,19 +438,20 @@ restore unsupported sorting or duplicate embedded global chrome as an undocument
 
 ## Frontend Execution Record
 
-All frontend-owned phases were implemented against editable
-`@dev-mainsequence/command-center-sdk@0.1.3`.
+All frontend-owned phases are implemented against
+`@dev-mainsequence/command-center-sdk@0.1.13`.
 
 - Embedded mode now renders a thin route-content root. The standalone sidebar, topbar, branding,
   API Diagnostics navigation, and application-owned theme/session controls never render after iframe
   initialization.
 - The standalone shell and all stable route paths remain available. `/settings` is presented as
   Markets **API Diagnostics**, not Command Center global settings.
-- All top-level resource columns have no `sortableKey`, normalized controls advertise
-  `ordering: []`, and list serialization no longer sends `ordering`.
-- `bulkRemove` and frontend-created `ResourceBulkActionDefinition` values were removed. Asset
-  Categories, Portfolios, and Portfolio Groups now configure only their backend discovery paths and
-  use the SDK HTTP adapter's `listBulkActions`, `preflightBulkAction`, and `executeBulkAction` methods.
+- All primary and embedded lists accept `command-center.resource_collection@v1` directly. Search,
+  filters, ordering, visible columns, identity, and bulk actions come from
+  `command-center.resource_discovery@v1`.
+- `bulkRemove`, frontend-created `ResourceBulkActionDefinition` values, and deprecated
+  `listBulkActions` discovery were removed. The SDK HTTP adapter uses `discover`,
+  `preflightBulkAction`, and `executeBulkAction`.
 - The backend contract payload is passed unchanged as `{ selection, options }`; explicit and
   all-matching semantics, safe endpoint validation, preflight gating, rediscovery, refresh, and
   selection cleanup remain SDK-owned.
@@ -464,28 +463,24 @@ All frontend-owned phases were implemented against editable
   invalidate detail content before exposing their result tab.
 - The SDK theme packages remain loaded once. Application CSS now uses published theme tokens for
   danger, success, surfaces, overlays, foregrounds, borders, and shadows, with no literal colors in
-  `frontend/src/app/globals.css`.
+  `src/app/globals.css`.
 - The E2E iframe parent is now the published SDK `StaticSiteIframe`. Tests cover the default sandbox,
   exact-origin handshake, chrome-free child, anonymous context, and repeated light/dark theme
   updates. Unit coverage also verifies payload-limit rejection, handshake timeout, and teardown.
 
 ### Backend dependency
 
-The frontend assumes these discovery endpoints will be supplied by the coordinated backend release:
-
-- `GET /api/v1/asset-category/bulk-actions/`;
-- `GET /api/v1/portfolio/bulk-actions/`; and
-- `GET /api/v1/portfolio-group/bulk-actions/`.
-
-Discovery, optional preflight, and execution must conform to the manifest-published contracts named
-earlier in this document. These endpoints are not yet in the pinned 128-operation OpenAPI artifact,
-so production deployment remains gated on the backend release and subsequent OpenAPI refresh.
+The frontend assumes every primary and embedded collection returns the manifest-published
+`command-center.resource_collection@v1` body and exposes
+`GET {collection-path}/discovery/` with `command-center.resource_discovery@v1`. Optional preflight
+and execution must conform to their manifest-published contracts. The pinned 158-operation OpenAPI
+artifact includes all 25 canonical collection and discovery pairs.
 
 ### Verification evidence
 
 | Gate | Result |
 | --- | --- |
-| Generated OpenAPI drift | passed; generated types match the pinned 128-operation contract |
+| Generated OpenAPI drift | passed; generated types match the pinned 158-operation contract |
 | TypeScript | passed |
 | ESLint | passed |
 | Unit/component tests | 37 passed across 9 files |
@@ -496,3 +491,24 @@ so production deployment remains gated on the backend release and subsequent Ope
 
 No backend, database, cookie, CORS, launch-token, host CSP, iframe sandbox policy, or storage code
 was changed by this frontend implementation.
+
+## SDK 0.1.13 canonical collection supersession
+
+The SDK 0.1.13 collection migration supersedes the legacy response-normalization and
+`/bulk-actions/` assumptions recorded above:
+
+- all 12 primary registries and all 10 embedded related collections use one shared SDK HTTP
+  resource adapter;
+- list endpoints return `command-center.resource_collection@v1` directly, with no frontend
+  translation from `count`/`results`, bare arrays, or custom list wrappers;
+- every collection derives `GET {collection-path}/discovery/` and consumes
+  `command-center.resource_discovery@v1` for identity, controls, ordered columns, and authorized
+  bulk actions;
+- list requests serialize pagination, semantic search, declared filters, and discovered ordering
+  centrally; they do not send a per-resource `response_format`; and
+- backend-owned bulk actions use discovery, optional preflight, execution, reauthorization,
+  refresh, and selection cleanup through the SDK lifecycle.
+
+The coordinated backend release implements those manifest-published contracts for all 25
+collection routes. The pinned OpenAPI artifact and generated types are current; do not reintroduce
+a legacy compatibility normalizer.

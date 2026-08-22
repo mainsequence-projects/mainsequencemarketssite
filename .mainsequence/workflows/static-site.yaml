@@ -6,7 +6,7 @@ resources:
     spec:
       release_kind: static_site
       name: Main Sequence Markets
-      root_directory: frontend
+      root_directory: .
       framework: vite
       node_version: "24"
       output_directory: dist

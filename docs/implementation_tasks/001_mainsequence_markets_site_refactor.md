@@ -55,7 +55,7 @@ Not yet claimed complete:
 
 The refactor is complete only when all of the following are true:
 
-1. `frontend/` in this repository contains a production Vite SPA with accepted route, action,
+1. The repository root contains a production Vite SPA with accepted route, action,
    mutation, loading, empty, unauthorized, and error-state parity.
 2. The SPA calls a deployed Markets API through one exact configured API origin. It does not use
    Command Center's connection registry, session cache, or Markets proxy.
@@ -166,29 +166,26 @@ mainsequencemarketssite/
 ├── api/
 │   └── app/
 │       └── main.py             # thin project composition only
-├── frontend/
-│   ├── package.json
-│   ├── package-lock.json
-│   ├── vite.config.ts
-│   ├── vitest.config.ts
-│   ├── playwright.config.ts
-│   ├── src/
-│   │   ├── app/
-│   │   ├── components/
-│   │   ├── features/
-│   │   ├── lib/api/
-│   │   ├── lib/embed/
-│   │   ├── lib/runtime/
-│   │   └── themes/
-│   └── tests/
+├── package.json
+├── package-lock.json
+├── vite.config.ts
+├── vitest.config.ts
+├── playwright.config.ts
+├── src/
+│   ├── app/
+│   ├── components/
+│   ├── features/
+│   ├── lib/api/
+│   ├── lib/embed/
+│   ├── lib/runtime/
+│   └── themes/
+├── tests/
 ├── docs/
 │   └── implementation_tasks/
 │       └── 001_mainsequence_markets_site_refactor/
-├── src/                         # project-owned composition helpers only
-└── tests/
 ```
 
-`frontend/` is one application package, not an npm workspace. It does not contain the published
+The repository root is one application package, not an npm workspace. It does not contain the published
 widget package.
 
 ### Widget package repository
@@ -503,7 +500,6 @@ Do not combine first extraction, production cutover, and source deletion in one 
 ### Site frontend
 
 ```bash
-cd frontend
 npm run typecheck
 npm run lint
 npm test

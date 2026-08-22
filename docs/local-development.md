@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Node.js 24 (`frontend/.nvmrc` is the local runtime pin)
+- Node.js 24 (`.nvmrc` is the local runtime pin)
 - npm
 - a reachable `mainsequencemarkets` `apps/v1` API
 
@@ -15,7 +15,6 @@ dependencies resolve to the application's runtime.
 ## Setup
 
 ```bash
-cd frontend
 npm install
 cp .env.example .env.local
 npm run dev
@@ -58,6 +57,6 @@ and exercises the embedded SDK delegated FastAPI transport against the same fixt
 mutates a live Markets deployment. The test-only build flag mounts a real SDK `StaticSiteIframe`
 host at `/__iframe-host`; it is set by `npm run test:e2e` and is absent from ordinary builds.
 
-The frontend expects the backend bulk-action discovery endpoints documented in `api-contract.md`.
-Local API versions that do not provide them may still serve resources without bulk actions, but a
-discovery error is surfaced and the bulk action is not trusted or synthesized in the browser.
+The frontend requires every backend collection and sibling discovery endpoint documented in
+`api-contract.md`. A missing or invalid discovery response is a contract failure surfaced to the
+user; the browser does not synthesize columns, controls, or bulk actions as a fallback.

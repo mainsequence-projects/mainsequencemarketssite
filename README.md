@@ -12,7 +12,6 @@ Use Node.js 24. The frontend package enforces the `24.x` engine range and includ
 for local version managers.
 
 ```bash
-cd frontend
 nvm use
 npm install
 cp .env.example .env.local
@@ -43,7 +42,7 @@ one process needs debugging.
 `.mainsequence/workflows/static-site.yaml` declares one Vite SPA release named **Main Sequence
 Markets** for the registered `main` ProjectBranch. Every synchronized `main` commit is eligible for
 automatic rebuild and deployment. The remote builder installs the repository-contained Command
-Center SDK `0.1.11` archive, so it does not depend on a developer-local path or the older registry
+Center SDK `0.1.13` archive, so it does not depend on a developer-local path or an unpinned registry
 package. Its public build environment contains the stable `main` Markets FastAPI ResourceRelease
 UID. Automatic API redeployments keep that identity, while the SDK obtains the current opaque RPC
 endpoint and delegated credential at request time; the workflow must not copy a runtime URL or
@@ -52,7 +51,6 @@ credential into the browser bundle.
 ## Verification
 
 ```bash
-cd frontend
 npm run api:check
 npm run theme:audit
 npm run typecheck
@@ -74,8 +72,8 @@ npm run test:e2e
 - [Full SDK refactor implementation](docs/implementation_tasks/002_command_center_sdk_normalization.md)
 - [SDK alignment plan (0.1.3 baseline)](docs/implementation_tasks/003_command_center_sdk_0_1_3_alignment.md)
 
-The SDK alignment baseline is implemented, consumes the repository-contained SDK `0.1.11` package,
-and is locally verified. Production bulk actions remain gated on the backend
-discovery/preflight/execution contract documented under the API contract. Applying and observing the
-authenticated platform release remains a separate deployment step after this repository change is
-committed and synchronized.
+The SDK alignment baseline is implemented against the repository-contained SDK `0.1.13` package.
+All 25 backend collections and discovery operations are captured in the pinned OpenAPI document,
+and account and pricing-curve views use distinct canonical detail and summary operations. Applying
+and observing the authenticated platform release remains a separate deployment step after this
+repository change is committed and synchronized.

@@ -5,6 +5,13 @@ description: Set up, inspect, upgrade, or troubleshoot a TypeScript or React pro
 
 # Use Command Center SDK
 
+## Use The Repository-Root Project Layout
+
+For a registered Main Sequence Vite project, treat the Git repository root as the application
+root. Keep `package.json`, `package-lock.json`, `.env`, `.agents/`, `src/`, and `vite.config.*`
+there, and expect the production build under `dist/`. Do not create or discover a nested
+`frontend/` application.
+
 ## Resolve The Installed SDK
 
 1. Locate the package whose name is `@dev-mainsequence/command-center-sdk`.
@@ -16,6 +23,31 @@ description: Set up, inspect, upgrade, or troubleshoot a TypeScript or React pro
 Treat the installed version as authoritative. Do not assume that a capability described by a plan,
 ADR, older checkout, or another application exists in the installed SDK.
 
+## Inspect And Update The Project SDK
+
+From the Git repository root, inspect the dependency without changing it:
+
+```bash
+npx command-center-sdk project sdk-status --path . --json
+```
+
+Keep `declared`, `locked`, `installed`, `wanted`, and `latest` separate when reporting the result.
+`wanted` is npm's compatible version under the current declaration; `latest` may be outside that
+policy. Do not infer that every difference should mutate `package.json`.
+
+When the user authorizes an SDK update, preview and then run the package-scoped workflow:
+
+```bash
+npx command-center-sdk project update-sdk --path . --dry-run
+npx command-center-sdk project update-sdk --path .
+```
+
+The workflow refuses peer-only, linked, workspace, file, Git, URL, and alias declarations. It does
+not widen a blocked dependency constraint, update unrelated packages, change the application
+version, call the backend, commit, tag, or push. After an applied update, run the consumer checks
+against public imports and use `command-center-sdk skills sync --path .` when strict backend-owned
+guidance refresh is required.
+
 ## Refresh Installed Guidance
 
 Package installation copies version-matched SDK skills into `.agents/skills/command-center` and
@@ -23,8 +55,8 @@ makes a nonblocking MCP refresh when `MAINSEQUENCE_ACCESS_TOKEN` plus an MCP URL
 the npm process. Do not assume that the best-effort platform lane succeeded merely because package
 installation completed.
 
-When current backend-owned platform guidance is required, run the strict workflow from the target
-project:
+When current backend-owned platform guidance is required, run the strict workflow from the Git
+repository root:
 
 ```bash
 npx command-center-sdk skills sync --path .

@@ -3,7 +3,7 @@
 - **Status:** complete
 - **Planning date:** 2026-08-06
 - **Completion date:** 2026-08-06
-- **Application:** `frontend/`
+- **Application:** repository root
 - **SDK:** editable `@dev-mainsequence/command-center-sdk@0.1.2`
 - **Static-site protocol:** `mainsequence.*`, numeric version `1`
 
