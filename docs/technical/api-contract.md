@@ -1,7 +1,9 @@
 # API contract
 
 The pinned browser contract is [mainsequencemarkets-openapi.json](contracts/mainsequencemarkets-openapi.json).
-It contains 158 operations from the `apps/v1` FastAPI application inspected on 2026-08-22.
+It contains 158 operations from the `apps/v1` FastAPI application. The contract is authored in the
+[Main Sequence Markets API repository](https://github.com/mainsequence-projects/MainSequenceMarkets)
+and rendered here as a [generated API reference](api-reference.md).
 
 Generated TypeScript lives at `src/lib/api/generated.ts`. Resource definitions use
 `keyof operations`, so misspelled or removed operation IDs fail type checking.
@@ -12,10 +14,12 @@ Generated TypeScript lives at `src/lib/api/generated.ts`. Resource definitions u
 2. Review the diff, especially routes, request bodies, required fields, responses, and operation IDs.
 3. Replace `docs/technical/contracts/mainsequencemarkets-openapi.json` with the reviewed artifact.
 4. Run `npm run api:generate` from the repository root.
-5. Run all verification commands.
-6. Update the route compatibility table and changelog for intentional changes.
+5. Run `npm run docs:api:generate` to rebuild the local reference pages.
+6. Run all verification commands.
+7. Update the route compatibility table and changelog for intentional changes.
 
 Runtime code must not generate the contract by importing another repository checkout.
+The deployment build also never fetches `/openapi.json`; it renders only the reviewed pinned file.
 
 ## Canonical Command Center collection handoff
 

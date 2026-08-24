@@ -5,6 +5,7 @@ import {
 } from "@dev-mainsequence/command-center-sdk/navigation";
 import {
   BarChart3,
+  BookOpenText,
   Building2,
   CalendarDays,
   Database,
@@ -161,6 +162,27 @@ const platformApplication = defineNavigationApplication({
   ],
 });
 
+const documentationApplication = defineNavigationApplication({
+  id: "documentation",
+  label: "Documentation",
+  description: "Main Sequence Markets surface and technical documentation.",
+  icon: BookOpenText,
+  defaultDestinationId: "documentation-home",
+  subApplications: [
+    {
+      id: "documentation",
+      label: "Documentation",
+      destinations: [
+        {
+          id: "documentation-home",
+          label: "Open documentation",
+          icon: BookOpenText,
+        },
+      ],
+    },
+  ],
+});
+
 const navigationApplications = [
   assetsApplication,
   portfoliosApplication,
@@ -190,10 +212,18 @@ export function AppShell({ children }: { children: ReactNode }) {
     : (activeApplicationId ?? assetsApplication.id);
 
   function handleOpenApplicationChange(applicationId: string | null) {
+    if (applicationId === documentationApplication.id) {
+      window.location.assign("/docs/");
+      return;
+    }
     setOpenNavigation({ applicationId, pathname: location.pathname });
   }
 
   function handleNavigate(intent: NavigationIntent) {
+    if (intent.applicationId === documentationApplication.id) {
+      window.location.assign("/docs/");
+      return;
+    }
     const destinationId = intent.destinationId as MarketsDestinationId;
     const path = destinationRoutes[destinationId];
     if (!path || destinationApplicationIds[destinationId] !== intent.applicationId) return;
@@ -222,7 +252,8 @@ export function AppShell({ children }: { children: ReactNode }) {
       className="markets-navigation-shell"
       collapsed={navigationCollapsed}
       contentClassName="markets-navigation-content"
-      label="Sections"
+      footerApplications={[documentationApplication]}
+      label="Main Sequence Markets"
       onCollapsedChange={setNavigationCollapsed}
       onNavigate={handleNavigate}
       onOpenApplicationChange={handleOpenApplicationChange}

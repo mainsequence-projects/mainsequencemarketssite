@@ -15,7 +15,14 @@ The application has no runtime source-checkout imports and no Main Sequence Pyth
 
 ## Application shape
 
-The repository root is one Vite package:
+The repository root is one npm package with two independently rendered browser surfaces:
+
+- Vite builds the embedded Markets application at `/`; and
+- Docusaurus builds the documentation site at `/docs/` from the Markdown under `docs/`.
+
+Both builds are emitted into `dist/` and deployed as one static-site artifact. The Docusaurus
+configuration lives under `documentation/`; it does not duplicate or relocate the Markdown source.
+The application implementation is organized as follows:
 
 - `src/app/` contains bootstrap, routing, the shell, and runtime context;
 - `src/features/resources/` maps operation-backed registries and details onto SDK resource views;
@@ -27,7 +34,9 @@ The repository root is one Vite package:
 Markets navigation uses SDK `ApplicationNavigationShell` from the public `/navigation`
 entrypoint. The rail contains five stable application sections—Assets, Portfolios, Managed
 Accounts, Pricing, and Platform—and each section opens its own grouped destination submenu. SDK
-navigation intents are translated into the project-owned History API router. The SDK owns the rail,
+navigation intents are translated into the project-owned History API router. A Documentation item
+uses the SDK shell's public footer-application slot so its book icon remains fixed at the bottom of
+the rail; selecting it navigates the iframe to the independent `/docs/` document. The SDK owns the rail,
 grouped destination panel, active state, collapse behavior, keyboard navigation, focus treatment,
 and tooltips. The application owns route paths. This shell renders in embedded production and in
 local direct development because it is Markets-owned navigation, not a copy of Command Center's
@@ -62,6 +71,13 @@ never used as the resource identity record.
 The SPA uses a small project-owned History API router. During implementation, the available React
 Router releases were covered by high-severity production advisories. Removing that dependency kept
 deep-link and back/forward behavior while producing a clean production dependency audit.
+
+Docusaurus owns documentation routing, page navigation, and rendering below `/docs/`. Its sidebar
+follows the same five Markets applications and destination groups as the application rail, followed
+by the technical section. Human pages remain authored Markdown. API operation and schema pages are
+generated from the reviewed pinned OpenAPI artifact before every documentation build and are not
+committed as a second contract. The documentation site does not initialize the Markets API
+transport, and its OpenAPI request-send control is disabled.
 
 ## Request boundary
 

@@ -85,9 +85,26 @@ function resolveLocalTarget(sourceFile, rawTarget) {
   const withoutFragment = unwrapped.split("#", 1)[0].split("?", 1)[0];
   if (!withoutFragment) return null;
   try {
-    return resolve(dirname(sourceFile), decodeURIComponent(withoutFragment));
+    const decodedTarget = decodeURIComponent(withoutFragment);
+    const target = decodedTarget.startsWith("/docs/")
+      ? resolve(docsRoot, decodedTarget.slice("/docs/".length))
+      : resolve(dirname(sourceFile), decodedTarget);
+    return resolveDocumentationTarget(target);
   } catch {
     errors.push(`Invalid encoded local link in ${relative(repositoryRoot, sourceFile)}: ${rawTarget}`);
     return null;
   }
+}
+
+function resolveDocumentationTarget(target) {
+  const candidates = [
+    target,
+    `${target}.md`,
+    `${target}.mdx`,
+    `${target}.api.mdx`,
+    `${target}.tag.mdx`,
+    resolve(target, "index.md"),
+    resolve(target, "index.mdx"),
+  ];
+  return candidates.find(existsSync) ?? target;
 }

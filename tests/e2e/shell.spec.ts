@@ -178,10 +178,15 @@ test("renders the local-direct Markets shell and asset registry", async ({ page 
   await page.goto("/assets");
   const sectionRail = page.locator("[data-cc-navigation-rail]");
   await expect(sectionRail).toBeVisible();
-  await expect(sectionRail.locator("[data-cc-navigation-application]")).toHaveCount(5);
+  await expect(sectionRail.locator(".cc-application-rail__title"))
+    .toHaveText("Main Sequence Markets");
+  await expect(sectionRail.locator(".cc-application-rail__items [data-cc-navigation-application]"))
+    .toHaveCount(5);
   for (const section of ["Assets", "Portfolios", "Managed Accounts", "Pricing", "Platform"]) {
     await expect(sectionRail.getByRole("button", { name: section, exact: true })).toBeVisible();
   }
+  await expect(sectionRail.locator(".cc-application-rail__footer-applications")
+    .getByRole("button", { name: "Documentation", exact: true })).toBeVisible();
   await expect(sectionRail.getByRole("button", { name: "Assets", exact: true }))
     .toHaveAttribute("aria-current", "page");
   await expect(page.locator("[data-app-navigation-panel]")).toBeVisible();
@@ -206,6 +211,21 @@ test("renders the local-direct Markets shell and asset registry", async ({ page 
   await page.getByRole("button", { name: "Asset Categories", exact: true }).click();
   await expect(page).toHaveURL(/\/asset-categories$/);
   await expect(page.getByRole("heading", { name: "Asset Categories", exact: true, level: 1 })).toBeVisible();
+});
+
+test("opens the independently rendered documentation from the bottom rail icon", async ({ page }) => {
+  await page.goto("/assets");
+  const documentationButton = page.locator(".cc-application-rail__footer-applications")
+    .getByRole("button", { name: "Documentation", exact: true });
+
+  await documentationButton.click();
+
+  await expect(page).toHaveURL(/\/docs\/$/);
+  await expect(page.getByRole("heading", { name: "Application surfaces", level: 1 })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Back to Markets" })).toHaveAttribute("href", "/");
+
+  await page.goto("/docs/technical/architecture/");
+  await expect(page.getByRole("heading", { name: "Frontend architecture", level: 1 })).toBeVisible();
 });
 
 test("supports direct deep-route navigation", async ({ page }) => {
@@ -293,10 +313,15 @@ test("renders the complete Markets navigation inside the SDK iframe host", async
   await expect(markets.locator("html")).toHaveAttribute("data-theme", "quartz-light");
   const embeddedNavigation = markets.locator("[data-cc-navigation-rail]");
   await expect(embeddedNavigation).toBeVisible();
-  await expect(embeddedNavigation.locator("[data-cc-navigation-application]")).toHaveCount(5);
+  await expect(embeddedNavigation.locator(".cc-application-rail__title"))
+    .toHaveText("Main Sequence Markets");
+  await expect(embeddedNavigation.locator(".cc-application-rail__items [data-cc-navigation-application]"))
+    .toHaveCount(5);
   for (const section of ["Assets", "Portfolios", "Managed Accounts", "Pricing", "Platform"]) {
     await expect(embeddedNavigation.getByRole("button", { name: section, exact: true })).toBeVisible();
   }
+  await expect(embeddedNavigation.locator(".cc-application-rail__footer-applications")
+    .getByRole("button", { name: "Documentation", exact: true })).toBeVisible();
   await expect(markets.getByText("Reference Data", { exact: true })).toBeVisible();
   await expect(markets.getByRole("button", { name: "Master List", exact: true })).toHaveAttribute("aria-current", "page");
   await embeddedNavigation.getByRole("button", { name: "Portfolios", exact: true }).click();
@@ -351,6 +376,10 @@ test("renders the complete Markets navigation inside the SDK iframe host", async
   });
   expect(darkComputedTheme.background).toBe(darkComputedTheme.backgroundToken);
   expect(darkComputedTheme.background).not.toBe(lightComputedTheme.background);
+
+  await embeddedNavigation.locator(".cc-application-rail__footer-applications")
+    .getByRole("button", { name: "Documentation", exact: true }).click();
+  await expect(markets.getByRole("heading", { name: "Application surfaces", level: 1 })).toBeVisible();
 });
 
 async function readNavigationTheme(locator: Locator) {

@@ -21,8 +21,26 @@ export default defineConfig(({ mode }) => {
       alias: { "@": new URL("./src", import.meta.url).pathname },
       dedupe: ["react", "react-dom"],
     },
-    server: { host: "127.0.0.1", port: 3000, strictPort: true, headers },
-    preview: { host: "127.0.0.1", port: 3100, strictPort: true, headers },
+    server: {
+      host: "127.0.0.1",
+      port: 3000,
+      strictPort: true,
+      headers,
+      proxy: {
+        "/docs": {
+          target: "http://127.0.0.1:3011",
+          changeOrigin: true,
+          ws: true,
+        },
+      },
+    },
+    preview: {
+      host: "127.0.0.1",
+      port: 3100,
+      strictPort: true,
+      headers,
+      proxy: {},
+    },
   };
 });
 

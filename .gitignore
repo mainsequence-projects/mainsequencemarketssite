@@ -8,6 +8,8 @@ __pycache__/
 *.pyc
 *.egg-info/
 node_modules/
+.docusaurus/
+docs/technical/api-reference/
 dist/
 coverage/
 playwright-report/

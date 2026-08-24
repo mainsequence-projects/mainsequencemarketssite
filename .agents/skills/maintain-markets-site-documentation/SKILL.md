@@ -90,6 +90,24 @@ Keep the pinned OpenAPI document under:
 
 `docs/technical/contracts/mainsequencemarkets-openapi.json`
 
+The canonical API source repository is:
+
+`https://github.com/mainsequence-projects/MainSequenceMarkets`
+
+The Docusaurus API reference under `/docs/technical/api-reference/` is generated from the pinned
+document. Never edit, review, or commit files under `docs/technical/api-reference/` as authored
+documentation. Update the FastAPI/Pydantic source in the API repository, export and review the
+pinned OpenAPI JSON, and regenerate the reference with:
+
+```bash
+npm run docs:api:generate
+```
+
+The generator must read the pinned local JSON. Do not fetch a live deployment during static-site
+builds and do not import a sibling repository into browser or deployment code. Keep the OpenAPI
+request-send control disabled because production uses the Command Center SDK delegated FastAPI
+transport.
+
 When moving or renaming it, update every generator and validation path, including `package.json`
 and `scripts/check-generated-api.mjs`.
 
@@ -129,6 +147,7 @@ When the OpenAPI artifact, its location, or generation tooling changes, also run
 
 ```bash
 npm run api:check
+npm run docs:api:generate
 ```
 
 When application source, navigation, build configuration, or executable tooling changes, also run:

@@ -1,5 +1,7 @@
 # Documentation
 
+This map is rendered by Docusaurus at `/docs/` in the deployed Markets static site.
+
 - [Application surfaces](surfaces/index.md)
   - [Assets](surfaces/assets/index.md)
     - [Reference Data](surfaces/assets/reference-data/index.md)
@@ -27,6 +29,7 @@
   - [Frontend architecture](technical/architecture.md)
   - [Local development](technical/local-development.md)
   - [API contract](technical/api-contract.md)
+  - [API reference](technical/api-reference.md)
   - [Route compatibility](technical/route-compatibility.md)
   - [Embedding and security](technical/embedding-security.md)
   - [Deployment and rollback](technical/deployment-and-rollback.md)

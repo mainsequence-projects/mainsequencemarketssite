@@ -6,6 +6,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
+      "runtimeVersion": "24",
       "runtimeArgs": [
         "run",
         "dev",
@@ -48,12 +49,28 @@
       "console": "integratedTerminal",
       "justMyCode": false,
       "subProcess": true
+    },
+    {
+      "name": "Markets Documentation (3011)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeVersion": "24",
+      "runtimeArgs": ["run", "docs:dev"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "outputCapture": "std",
+      "autoAttachChildProcesses": true
     }
   ],
   "compounds": [
     {
       "name": "Markets: Full Stack",
-      "configurations": ["Markets API (8001)", "Markets Frontend (3010)"],
+      "configurations": [
+        "Markets API (8001)",
+        "Markets Frontend (3010)",
+        "Markets Documentation (3011)"
+      ],
       "stopAll": true
     }
   ]

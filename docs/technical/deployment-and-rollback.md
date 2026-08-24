@@ -7,6 +7,17 @@ The repository owns `.mainsequence/workflows/static-site.yaml`. It declares one 
 routing through `/index.html`, and automatic redeployment for every synchronized commit on the
 registered `main` ProjectBranch. No development branch or second site release is declared.
 
+The workflow's existing npm build produces both surfaces in the same `dist/` output: Vite emits the
+Markets application at the root, then Docusaurus emits real static pages under `dist/docs/`. The
+platform therefore needs no documentation backend, second release, or additional environment
+variable. `/docs/` and its nested routes are served from the same static-site deployment while
+retaining Docusaurus's independent layout and navigation.
+
+Before Docusaurus compiles, the build recreates the API operation and schema pages from the
+committed OpenAPI snapshot. It does not call the deployed API, and generated MDX is not a second
+reviewed source. Updating the reference therefore requires reviewing and committing a new OpenAPI
+snapshot first.
+
 The only application-specific browser build input is `VITE_FASTAPI_RELEASE_UID`, which selects the
 Main Sequence Markets API release used by the SDK's delegated FastAPI transport. The platform owns
 and injects the reserved `VITE_COMMAND_CENTER_ORIGIN`; do not commit or derive a Command Center
@@ -42,8 +53,8 @@ credential resolver.
    POST, PATCH, and DELETE requests succeed.
 4. Smoke-test embedded reads and mutations through delegated `fetchFastApi` transport.
 5. Verify backend bulk discovery, optional preflight, execution, refresh, and selection cleanup.
-6. Verify deep links, the complete Markets sidebar, the global-chrome ownership boundary, and
-   repeated theme updates.
+6. Verify deep links, the complete Markets sidebar, the bottom Documentation icon, `/docs/` nested
+   routes, the global-chrome ownership boundary, and repeated theme updates.
 7. Retain the previous site/Command Center release for the agreed rollback window.
 8. Confirm the automatic deployment run is terminal and the active deployment matches the pushed
    commit.

@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+- Added a read-only Docusaurus API reference generated from the reviewed pinned OpenAPI contract:
+  158 operation pages and 220 schema pages grouped by API-owned tag groups.
+- Added build-time generation and validation gates; generated MDX is excluded from Git and never
+  fetched from a live API during deployment.
+- Added the canonical [API source repository](https://github.com/mainsequence-projects/MainSequenceMarkets)
+  link to the technical documentation.
+- Rewrote the Assets documentation to explain canonical identity, Asset Type, timestamped
+  snapshots, one-to-one details, pricing details, categories, and the separate Index model.
+- Added an independent Docusaurus documentation site under `/docs/` to the same static deployment,
+  with the existing `docs/` tree as its single Markdown source.
+- Added a Documentation book icon to the SDK navigation shell's bottom footer slot and wired it to
+  the Docusaurus entry point in embedded production and local development.
+- Extended the VS Code full-stack launcher with the Docusaurus server on port 3011; Vite proxies
+  `/docs` during development and the production build emits documentation into `dist/docs/`.
+- Renamed the Markets-owned navigation panel heading from **Sections** to
+  **Main Sequence Markets** in both embedded production and local development.
 - Restored the complete Markets-owned sidebar in embedded mode and added iframe regression
   coverage for all five application sections and their destination groups.
 - Made production explicitly embedded-only: the deployed workflow exposes only the stable FastAPI

@@ -1,8 +1,13 @@
+---
+slug: /
+---
+
 # Application surfaces
 
 This section explains the Markets application from a person's point of view: where each view is,
 what information it presents, and which actions are available. Its folders and page order mirror
-the left navigation exactly.
+the left navigation exactly. Open this documentation from the book icon fixed to the bottom of the
+Markets application rail.
 
 ## Navigation map
 

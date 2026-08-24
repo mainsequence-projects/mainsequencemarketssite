@@ -51,7 +51,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover accounts */
+        /**
+         * Discover accounts
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverAccounts"];
         put?: never;
         post?: never;
@@ -88,7 +91,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover account target-allocation candidates */
+        /**
+         * Discover account target-allocation candidates
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverAccountTargetAllocationTargets"];
         put?: never;
         post?: never;
@@ -309,7 +315,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover asset categories */
+        /**
+         * Discover asset categories
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverAssetCategories"];
         put?: never;
         post?: never;
@@ -374,7 +383,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover assets */
+        /**
+         * Discover assets
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverAssets"];
         put?: never;
         post?: never;
@@ -455,7 +467,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Asset related MetaTables */
+        /**
+         * List Asset related MetaTables
+         * @description List registered MetaTables whose authoritative foreign key targets the selected Asset's stable unique identifier. Discovery describes compatible data sources; it does not guarantee that the selected Asset currently has observations in each table.
+         */
         get: operations["listAssetRelatedMetaTables"];
         put?: never;
         post?: never;
@@ -472,7 +487,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover asset related MetaTables */
+        /**
+         * Discover asset related MetaTables
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverAssetRelatedMetaTables"];
         put?: never;
         post?: never;
@@ -533,7 +551,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover calendars */
+        /**
+         * Discover calendars
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverCalendars"];
         put?: never;
         post?: never;
@@ -594,7 +615,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover calendar dates */
+        /**
+         * Discover calendar dates
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverCalendarDates"];
         put?: never;
         post?: never;
@@ -683,7 +707,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover calendar events */
+        /**
+         * Discover calendar events
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverCalendarEvents"];
         put?: never;
         post?: never;
@@ -772,7 +799,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover calendar sessions */
+        /**
+         * Discover calendar sessions
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverCalendarSessions"];
         put?: never;
         post?: never;
@@ -865,7 +895,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Index types */
+        /**
+         * List Index types
+         * @description Return registered business classifications available for Index identities.
+         */
         get: operations["listIndexTypes"];
         put?: never;
         post?: never;
@@ -882,7 +915,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover index types */
+        /**
+         * Discover index types
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverIndexTypes"];
         put?: never;
         post?: never;
@@ -899,7 +935,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Index type */
+        /**
+         * Get Index type
+         * @description Return one registered Index business classification by its stable type key.
+         */
         get: operations["getIndexType"];
         put?: never;
         post?: never;
@@ -916,10 +955,16 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List indexes */
+        /**
+         * List indexes
+         * @description Return reusable market-observable identities in the canonical Command Center resource collection contract. Filters can distinguish formula ownership and canonical dataset availability without treating an Index as a tradable Asset.
+         */
         get: operations["listIndexes"];
         put?: never;
-        /** Create Index */
+        /**
+         * Create Index
+         * @description Create a reusable Index identity. `calculation_method` selects formula-managed or custom publication; `index_type` remains an independent business classification.
+         */
         post: operations["createIndex"];
         delete?: never;
         options?: never;
@@ -934,7 +979,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover indexes */
+        /**
+         * Discover indexes
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverIndexes"];
         put?: never;
         post?: never;
@@ -951,7 +999,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get index */
+        /**
+         * Get index
+         * @description Return one Index identity by uid, without expanding formulas or observations.
+         */
         get: operations["getIndex"];
         put?: never;
         post?: never;
@@ -962,7 +1013,10 @@ export interface paths {
         delete: operations["deleteIndex"];
         options?: never;
         head?: never;
-        /** Update Index */
+        /**
+         * Update Index
+         * @description Update the mutable descriptive and presentation fields of one Index identity.
+         */
         patch: operations["updateIndex"];
         trace?: never;
     };
@@ -993,7 +1047,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover index datasets */
+        /**
+         * Discover index datasets
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverIndexDatasets"];
         put?: never;
         post?: never;
@@ -1010,7 +1067,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Index dataset summary */
+        /**
+         * Get Index dataset summary
+         * @description Return availability and observation metadata for one canonical cadence-specific Index dataset identified by its registered MetaTable uid.
+         */
         get: operations["getIndexDatasetSummary"];
         put?: never;
         post?: never;
@@ -1027,7 +1087,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Index dataset values frame */
+        /**
+         * Get Index dataset values frame
+         * @description Return bounded canonical Index observations as `core.tabular_frame@v1`. Timestamps must be timezone-aware and the response is limited and ordered by the requested boundary.
+         */
         get: operations["getIndexDatasetValuesFrame"];
         put?: never;
         post?: never;
@@ -1064,7 +1127,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Index formulas */
+        /**
+         * List Index formulas
+         * @description Return the versioned formula definitions owned by one formula-calculated Index in the canonical Command Center resource collection contract.
+         */
         get: operations["listIndexFormulas"];
         put?: never;
         post?: never;
@@ -1081,7 +1147,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover index formulas */
+        /**
+         * Discover index formulas
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverIndexFormulas"];
         put?: never;
         post?: never;
@@ -1098,7 +1167,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Index formula */
+        /**
+         * Get Index formula
+         * @description Return one immutable formula definition, including its expression, exact source bindings, validity interval, alignment policy, and missing-data policy.
+         */
         get: operations["getIndexFormula"];
         put?: never;
         post?: never;
@@ -1135,7 +1207,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover index related MetaTables */
+        /**
+         * Discover index related MetaTables
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverIndexRelatedMetaTables"];
         put?: never;
         post?: never;
@@ -1152,7 +1227,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Index summary */
+        /**
+         * Get Index summary
+         * @description Return the reusable detail-page summary for one Index, including its classification, calculation ownership, and canonical dataset availability.
+         */
         get: operations["getIndexSummary"];
         put?: never;
         post?: never;
@@ -1169,10 +1247,16 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List portfolio groups */
+        /**
+         * List portfolio groups
+         * @description Return named portfolio group identities in the canonical Command Center resource collection contract. Groups organize portfolios through separate membership rows.
+         */
         get: operations["listPortfolioGroups"];
         put?: never;
-        /** Create portfolio group */
+        /**
+         * Create portfolio group
+         * @description Create or idempotently upsert one named portfolio grouping.
+         */
         post: operations["createPortfolioGroup"];
         delete?: never;
         options?: never;
@@ -1189,7 +1273,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Bulk delete portfolio groups */
+        /**
+         * Bulk delete portfolio groups
+         * @description Delete the explicitly selected portfolio groups after server-side preflight and authorization. Membership rows follow their database relationship policy.
+         */
         post: operations["bulkDeletePortfolioGroups"];
         delete?: never;
         options?: never;
@@ -1224,7 +1311,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List groups for portfolio */
+        /**
+         * List groups for portfolio
+         * @description Return the groups containing one Portfolio in the canonical Command Center resource collection contract.
+         */
         get: operations["listGroupsForPortfolio"];
         put?: never;
         post?: never;
@@ -1241,7 +1331,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover groups for a portfolio */
+        /**
+         * Discover groups for a portfolio
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverGroupsForPortfolio"];
         put?: never;
         post?: never;
@@ -1258,7 +1351,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover portfolio groups */
+        /**
+         * Discover portfolio groups
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverPortfolioGroups"];
         put?: never;
         post?: never;
@@ -1277,7 +1373,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Bulk delete portfolio group memberships */
+        /**
+         * Bulk delete portfolio group memberships
+         * @description Delete membership rows selected by membership uid, portfolio-group uid, or portfolio uid without deleting the referenced Portfolio or PortfolioGroup identities.
+         */
         post: operations["bulkDeletePortfolioGroupMemberships"];
         delete?: never;
         options?: never;
@@ -1292,15 +1391,24 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get portfolio group */
+        /**
+         * Get portfolio group
+         * @description Return one PortfolioGroup identity by uid.
+         */
         get: operations["getPortfolioGroup"];
         put?: never;
         post?: never;
-        /** Delete portfolio group */
+        /**
+         * Delete portfolio group
+         * @description Delete one PortfolioGroup identity and report the number of removed rows. This does not delete Portfolio identities.
+         */
         delete: operations["deletePortfolioGroup"];
         options?: never;
         head?: never;
-        /** Update portfolio group */
+        /**
+         * Update portfolio group
+         * @description Update mutable display and metadata fields for one PortfolioGroup identity.
+         */
         patch: operations["updatePortfolioGroup"];
         trace?: never;
     };
@@ -1311,10 +1419,16 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List portfolios in group */
+        /**
+         * List portfolios in group
+         * @description Return the Portfolios assigned to one group in the canonical Command Center resource collection contract.
+         */
         get: operations["listPortfoliosInGroup"];
         put?: never;
-        /** Add portfolio to group */
+        /**
+         * Add portfolio to group
+         * @description Create the many-to-many membership between one PortfolioGroup and one Portfolio, resolving the portfolio by uid or stable unique identifier.
+         */
         post: operations["addPortfolioToGroup"];
         delete?: never;
         options?: never;
@@ -1329,7 +1443,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover portfolios in a group */
+        /**
+         * Discover portfolios in a group
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverPortfoliosInGroup"];
         put?: never;
         post?: never;
@@ -1349,7 +1466,10 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
-        /** Remove portfolio from group */
+        /**
+         * Remove portfolio from group
+         * @description Delete only the membership between the selected PortfolioGroup and Portfolio; both resource identities remain intact.
+         */
         delete: operations["removePortfolioFromGroup"];
         options?: never;
         head?: never;
@@ -1387,7 +1507,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover portfolio signals */
+        /**
+         * Discover portfolio signals
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverPortfolioSignals"];
         put?: never;
         post?: never;
@@ -1532,7 +1655,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover portfolios */
+        /**
+         * Discover portfolios
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverPortfolios"];
         put?: never;
         post?: never;
@@ -1917,7 +2043,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover pricing curves */
+        /**
+         * Discover pricing curves
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverPricingCurves"];
         put?: never;
         post?: never;
@@ -1978,7 +2107,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover pricing curve selections */
+        /**
+         * Discover pricing curve selections
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverPricingCurveSelections"];
         put?: never;
         post?: never;
@@ -2099,7 +2231,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover pricing market-data bindings */
+        /**
+         * Discover pricing market-data bindings
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverPricingMarketDataBindings"];
         put?: never;
         post?: never;
@@ -2228,7 +2363,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover pricing market-data sets */
+        /**
+         * Discover pricing market-data sets
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverPricingMarketDataSets"];
         put?: never;
         post?: never;
@@ -2285,7 +2423,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover bindings for a pricing market-data set */
+        /**
+         * Discover bindings for a pricing market-data set
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverPricingMarketDataSetBindings"];
         put?: never;
         post?: never;
@@ -2370,7 +2511,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Discover virtual funds */
+        /**
+         * Discover virtual funds
+         * @description Return the canonical `command-center.resource_discovery@v1` description for this collection. The response declares resource identity, search, filters, ordering, visible columns, and the bulk actions authorized for the current caller.
+         */
         get: operations["discoverVirtualFunds"];
         put?: never;
         post?: never;
@@ -2466,35 +2610,53 @@ export interface components {
     schemas: {
         /**
          * Account
-         * @description Typed account row.
+         * @description Canonical account registry keyed by uid and unique_identifier. Stores client or execution-account identity, status flags, holdings DataNode linkage, optional account group membership, and account metadata used by holdings and execution workflows. Allocation-model tracking belongs to AccountTargetAllocationTable.
          */
         Account: {
-            /** Account Group Uid */
+            /**
+             * Account Group Uid
+             * @description Optional AccountGroupTable.uid used to group accounts.
+             */
             account_group_uid?: string | null;
             /**
              * Account Is Active
+             * @description Whether the account is currently active for workflows.
              * @default false
              */
             account_is_active: boolean;
-            /** Account Name */
+            /**
+             * Account Name
+             * @description Display name for the client, strategy, or execution account.
+             */
             account_name: string;
-            /** Holdings Data Node Uid */
+            /**
+             * Holdings Data Node Uid
+             * @description Optional platform DataNodeStorage UID for this account's holdings history.
+             */
             holdings_data_node_uid?: string | null;
             /**
              * Is Paper
+             * @description Whether the account is a paper or simulated account.
              * @default true
              */
             is_paper: boolean;
-            /** Metadata Json */
+            /**
+             * Metadata Json
+             * @description JSON metadata for account provenance, routing, or operational labels.
+             */
             metadata_json?: {
                 [key: string]: unknown;
             } | null;
             /**
              * Uid
              * Format: uuid
+             * @description Canonical account identity used by account-owned MetaTables and DataNodes.
              */
             uid: string;
-            /** Unique Identifier */
+            /**
+             * Unique Identifier
+             * @description Stable external account business key used for idempotent upserts.
+             */
             unique_identifier: string;
         };
         /** AccountAddAssetTargetPositionRequest */
@@ -2874,41 +3036,64 @@ export interface components {
         };
         /**
          * Asset
-         * @description User-facing asset row returned by typed markets API helpers.
+         * @description Canonical asset identity table keyed by uid and unique_identifier. Holds only shared asset identity and asset_type so type-specific properties live in one-to-one asset detail tables or DataNode storage.
          */
         Asset: {
-            /** Asset Type */
+            /**
+             * Asset Type
+             * @description Canonical asset type code used to classify rows in AssetTable.
+             */
             asset_type?: string | null;
             /**
              * Uid
              * Format: uuid
+             * @description Canonical UUID primary key for this MetaTable row.
              */
             uid: string;
-            /** Unique Identifier */
+            /**
+             * Unique Identifier
+             * @description Unique stable asset business identifier used for idempotent upserts, lookup, and asset-indexed DataNode joins.
+             */
             unique_identifier: string;
         };
         /**
          * AssetCategory
-         * @description Typed asset universe row.
+         * @description Asset category registry keyed by unique_identifier. Stores client-owned category names, descriptions, and metadata used to group canonical assets.
          */
         AssetCategory: {
-            /** Description */
+            /**
+             * Description
+             * @description Human-readable description of the registry row and its intended use.
+             */
             description?: string | null;
-            /** Display Name */
+            /**
+             * Display Name
+             * @description Human-readable display name for UI, logs, and operator workflows.
+             */
             display_name: string;
-            /** Metadata Json */
+            /**
+             * Metadata Json
+             * @description Structured metadata JSON for provider, application, or workflow-specific attributes.
+             */
             metadata_json?: {
                 [key: string]: unknown;
             } | null;
             /**
              * Uid
              * Format: uuid
+             * @description Canonical UUID primary key for this MetaTable row.
              */
             uid: string;
-            /** Unique Identifier */
+            /**
+             * Unique Identifier
+             * @description Stable business identifier used for idempotent upserts, lookup, and joins.
+             */
             unique_identifier: string;
         };
-        /** AssetCategoryDetailActions */
+        /**
+         * AssetCategoryDetailActions
+         * @description Mutation capabilities and endpoints authorized for the category detail surface.
+         */
         AssetCategoryDetailActions: {
             /** Can Delete */
             can_delete: boolean;
@@ -2919,7 +3104,10 @@ export interface components {
             /** Update Endpoint */
             update_endpoint: string;
         };
-        /** AssetCategoryDetailAssetsList */
+        /**
+         * AssetCategoryDetailAssetsList
+         * @description Nested Asset collection configuration scoped to the selected category.
+         */
         AssetCategoryDetailAssetsList: {
             /** Default Filters */
             default_filters: {
@@ -2930,7 +3118,10 @@ export interface components {
             /** Query Endpoint */
             query_endpoint: string;
         };
-        /** AssetCategoryDetailField */
+        /**
+         * AssetCategoryDetailField
+         * @description One labeled category fact rendered by the generic detail surface.
+         */
         AssetCategoryDetailField: {
             /** Label */
             label: string;
@@ -2941,7 +3132,10 @@ export interface components {
             /** Value Type */
             value_type: string;
         };
-        /** AssetCategoryDetailResponse */
+        /**
+         * AssetCategoryDetailResponse
+         * @description Composed category detail with facts, actions, and membership-scoped Asset list.
+         */
         AssetCategoryDetailResponse: {
             actions: components["schemas"]["AssetCategoryDetailActions"];
             assets_list: components["schemas"]["AssetCategoryDetailAssetsList"];
@@ -2956,14 +3150,20 @@ export interface components {
              */
             uid: string;
         };
-        /** AssetCategoryDetailSelectedCategory */
+        /**
+         * AssetCategoryDetailSelectedCategory
+         * @description Display label and supporting text for the selected Asset category.
+         */
         AssetCategoryDetailSelectedCategory: {
             /** Sub Text */
             sub_text: string;
             /** Text */
             text: string;
         };
-        /** AssetCurrentPricingDetailsResponse */
+        /**
+         * AssetCurrentPricingDetailsResponse
+         * @description Current serialized pricing instrument details and supported pricing operations.
+         */
         AssetCurrentPricingDetailsResponse: {
             /**
              * Asset Uid
@@ -2993,47 +3193,91 @@ export interface components {
             /** Source */
             source?: string | null;
         };
-        /** AssetCurrentSnapshotResponse */
+        /**
+         * AssetCurrentSnapshotResponse
+         * @description Latest timestamped display facts available for an Asset identity.
+         */
         AssetCurrentSnapshotResponse: {
-            /** Asset Identifier */
+            /**
+             * Asset Identifier
+             * @description Stable Asset.unique_identifier associated with the snapshot.
+             */
             asset_identifier?: string | null;
-            /** Asset Ticker Group Id */
+            /**
+             * Asset Ticker Group Id
+             * @description Provider grouping identifier shared by related ticker or share-class records.
+             */
             asset_ticker_group_id?: string | null;
-            /** Exchange Code */
+            /**
+             * Exchange Code
+             * @description Provider-supplied exchange or market code at the snapshot time.
+             */
             exchange_code?: string | null;
-            /** Name */
+            /**
+             * Name
+             * @description Provider-supplied security or instrument name at the snapshot time.
+             */
             name?: string | null;
-            /** Ticker */
+            /**
+             * Ticker
+             * @description Provider-supplied ticker or display symbol at the snapshot time.
+             */
             ticker?: string | null;
-            /** Time Index */
+            /**
+             * Time Index
+             * @description UTC timestamp of the latest available display-fact snapshot.
+             */
             time_index?: string | null;
         };
-        /** AssetDetailResponse */
+        /**
+         * AssetDetailResponse
+         * @description Composed Asset detail used by the Markets asset detail surface.
+         */
         AssetDetailResponse: {
-            /** Asset Type */
+            /**
+             * Asset Type
+             * @description Normalized classification key registered by AssetType. Type-specific properties remain in separate detail models.
+             */
             asset_type?: string | null;
+            /** @description Latest timestamped name, ticker, exchange, and grouping facts; fields are null when no snapshot has been published. */
             current_snapshot: components["schemas"]["AssetCurrentSnapshotResponse"];
-            /** Details */
+            /**
+             * Details
+             * @description Resolved type-specific or provider-specific detail records for this Asset.
+             */
             details?: {
                 [key: string]: unknown;
             }[];
-            /** Order Form */
+            /**
+             * Order Form
+             * @description Optional order-entry presentation metadata when supported.
+             */
             order_form?: {
                 [key: string]: unknown;
             } | null;
-            /** Trading View */
+            /**
+             * Trading View
+             * @description Optional trading-oriented presentation metadata when supported.
+             */
             trading_view?: {
                 [key: string]: unknown;
             } | null;
             /**
              * Uid
              * Format: uuid
+             * @description Canonical UUID primary key of the Asset identity.
              */
             uid: string;
-            /** Unique Identifier */
+            /**
+             * Unique Identifier
+             * @description Stable business identifier used for idempotent lookup and joins from asset-indexed data. It is not assumed to be a ticker.
+             */
             unique_identifier: string;
         };
-        /** AssetPricingOperationLinkResponse */
+        /**
+         * AssetPricingOperationLinkResponse
+         * @description Discoverable pricing operation that can be applied to the selected Asset.
+         */
         AssetPricingOperationLinkResponse: {
             /** App Component */
             app_component: {
@@ -3072,7 +3316,10 @@ export interface components {
             /** Url */
             url: string;
         };
-        /** AssetPricingOperationParameterResponse */
+        /**
+         * AssetPricingOperationParameterResponse
+         * @description One input required or accepted by an advertised Asset pricing operation.
+         */
         AssetPricingOperationParameterResponse: {
             /** Key */
             key: string;
@@ -3100,7 +3347,10 @@ export interface components {
              */
             valuation_date: string;
         };
-        /** AssetPricingSupportResponse */
+        /**
+         * AssetPricingSupportResponse
+         * @description Pricing capability declaration derived from the Asset's current instrument details.
+         */
         AssetPricingSupportResponse: {
             /** Instrument Type */
             instrument_type: string;
@@ -3509,7 +3759,10 @@ export interface components {
         } & {
             [key: string]: unknown;
         };
-        /** BulkDeleteAssetCategoriesResponse */
+        /**
+         * BulkDeleteAssetCategoriesResponse
+         * @description Result of deleting an explicitly selected set of Asset categories.
+         */
         BulkDeleteAssetCategoriesResponse: {
             /** Deleted Count */
             deleted_count: number;
@@ -3542,41 +3795,63 @@ export interface components {
         };
         /**
          * Calendar
-         * @description Typed calendar identity row.
+         * @description Calendar identity table keyed by unique_identifier. Stores the durable calendar definition, source adapter identity, timezone, and validity horizon used by portfolios, execution, pricing, settlement, and custom market workflows.
          */
         Calendar: {
-            /** Calendar Type */
+            /**
+             * Calendar Type
+             * @description Calendar purpose such as TRADING, SETTLEMENT, FIXING, BUSINESS, HOLIDAY, EVENT, or CUSTOM.
+             */
             calendar_type: string;
-            /** Display Name */
+            /**
+             * Display Name
+             * @description Human-readable calendar name shown in tools, examples, and reports.
+             */
             display_name: string;
-            /** Metadata Json */
+            /**
+             * Metadata Json
+             * @description Structured metadata for provider, desk, market, or workflow-specific calendar attributes.
+             */
             metadata_json?: {
                 [key: string]: unknown;
             } | null;
-            /** Source */
+            /**
+             * Source
+             * @description Adapter or provider that produced this calendar materialization.
+             */
             source?: string | null;
-            /** Source Identifier */
+            /**
+             * Source Identifier
+             * @description Provider-specific calendar key such as NYSE, TARGET, CME_EQ_INDEX, or a user-defined name.
+             */
             source_identifier?: string | null;
             /**
              * Timezone
+             * @description IANA timezone used to interpret local calendar dates and session labels.
              * @default UTC
              */
             timezone: string;
             /**
              * Uid
              * Format: uuid
+             * @description Canonical UUID primary key for this calendar identity row.
              */
             uid: string;
-            /** Unique Identifier */
+            /**
+             * Unique Identifier
+             * @description Stable business key used for idempotent calendar lookup and joins.
+             */
             unique_identifier: string;
             /**
              * Valid From
              * Format: date
+             * @description First local date covered by the persisted calendar materialization.
              */
             valid_from: string;
             /**
              * Valid To
              * Format: date
+             * @description Last local date covered by the persisted calendar materialization.
              */
             valid_to: string;
         };
@@ -3617,48 +3892,61 @@ export interface components {
         };
         /**
          * CalendarDate
-         * @description Typed row for one persisted calendar-local date.
+         * @description Calendar date table keyed by calendar_uid and local_date. Stores one daily business-day, holiday, weekend, and early-close fact per calendar date for deterministic joins and reproducible schedules.
          */
         CalendarDate: {
             /**
              * Calendar Uid
              * Format: uuid
+             * @description CalendarTable.uid for the calendar that owns this local-date fact.
              */
             calendar_uid: string;
-            /** Holiday Name */
+            /**
+             * Holiday Name
+             * @description Optional provider or user-facing name for the holiday on this date.
+             */
             holiday_name?: string | null;
             /**
              * Is Business Day
+             * @description True when this local date is an active business day for the calendar.
              * @default false
              */
             is_business_day: boolean;
             /**
              * Is Early Close
+             * @description True when the calendar has a shortened primary session on this local date.
              * @default false
              */
             is_early_close: boolean;
             /**
              * Is Holiday
+             * @description True when this local date is a named or provider-derived holiday.
              * @default false
              */
             is_holiday: boolean;
             /**
              * Is Weekend
+             * @description True when this local date falls on a weekend in the calendar locale.
              * @default false
              */
             is_weekend: boolean;
             /**
              * Local Date
              * Format: date
+             * @description Calendar-local date represented by this daily calendar fact.
              */
             local_date: string;
-            /** Metadata Json */
+            /**
+             * Metadata Json
+             * @description Structured provider, market, or override metadata for this calendar-date fact.
+             */
             metadata_json?: {
                 [key: string]: unknown;
             } | null;
             /**
              * Uid
              * Format: uuid
+             * @description Canonical UUID primary key for this calendar-date row.
              */
             uid: string;
         };
@@ -3718,44 +4006,64 @@ export interface components {
         };
         /**
          * CalendarEvent
-         * @description Typed row for one persisted calendar-level event.
+         * @description Calendar event table keyed by calendar, event date, event type, label, and optional target identity. Stores calendar-level expiry, settlement, roll, fixing, early-close, and convention events that are not tied to a single instrument position.
          */
         CalendarEvent: {
             /**
              * Calendar Uid
              * Format: uuid
+             * @description CalendarTable.uid for the calendar or market convention that owns this event.
              */
             calendar_uid: string;
-            /** Event Date */
+            /**
+             * Event Date
+             * @description Calendar-local date for this event when the event has a date component.
+             */
             event_date?: string | null;
             /**
              * Event Label
+             * @description Optional label that disambiguates same-type calendar events on the same date.
              * @default
              */
             event_label: string;
-            /** Event Time */
+            /**
+             * Event Time
+             * @description UTC timestamp for this event when the event has an intraday instant.
+             */
             event_time?: string | null;
-            /** Event Type */
+            /**
+             * Event Type
+             * @description Stable event type such as EXPIRY, LAST_TRADE, FIXING, SETTLEMENT, ROLL, EARLY_CLOSE, or HOLIDAY.
+             */
             event_type: string;
-            /** Metadata Json */
+            /**
+             * Metadata Json
+             * @description Structured provider, product-family, or convention metadata for this calendar event.
+             */
             metadata_json?: {
                 [key: string]: unknown;
             } | null;
             /**
              * Target Identifier
+             * @description Optional stable target business identifier used when target_uid is unavailable or unnecessary.
              * @default
              */
             target_identifier: string;
             /**
              * Target Type
+             * @description Optional target kind such as asset, index, product_family, future_contract, or empty for global events.
              * @default
              */
             target_type: string;
-            /** Target Uid */
+            /**
+             * Target Uid
+             * @description Optional UUID of the target object when the event is scoped to a platform row.
+             */
             target_uid?: string | null;
             /**
              * Uid
              * Format: uuid
+             * @description Canonical UUID primary key for this calendar-event row.
              */
             uid: string;
         };
@@ -3838,42 +4146,59 @@ export interface components {
         };
         /**
          * CalendarSession
-         * @description Typed row for one persisted calendar session.
+         * @description Calendar session table keyed by calendar_uid, local_date, and session_label. Stores optional UTC open and close windows used by trading, execution, intraday portfolio, fixing, and settlement workflows.
          */
         CalendarSession: {
             /**
              * Calendar Uid
              * Format: uuid
+             * @description CalendarTable.uid for the calendar that owns this session.
              */
             calendar_uid: string;
-            /** Closes At */
+            /**
+             * Closes At
+             * @description UTC timestamp when this session closes, when the source provides one.
+             */
             closes_at?: string | null;
             /**
              * Is Primary
+             * @description True when this is the primary session for the calendar-local date.
              * @default true
              */
             is_primary: boolean;
             /**
              * Local Date
              * Format: date
+             * @description Calendar-local date on which this session occurs.
              */
             local_date: string;
-            /** Metadata Json */
+            /**
+             * Metadata Json
+             * @description Structured provider, venue, or workflow metadata for this session window.
+             */
             metadata_json?: {
                 [key: string]: unknown;
             } | null;
-            /** Opens At */
+            /**
+             * Opens At
+             * @description UTC timestamp when this session opens, when the source provides one.
+             */
             opens_at?: string | null;
-            /** Session Label */
+            /**
+             * Session Label
+             * @description Stable session key such as regular, pre_market, post_market, pit, electronic, or fixing_window.
+             */
             session_label: string;
             /**
              * Timezone
+             * @description IANA timezone used to interpret the session's local date.
              * @default UTC
              */
             timezone: string;
             /**
              * Uid
              * Format: uuid
+             * @description Canonical UUID primary key for this calendar-session row.
              */
             uid: string;
         };
@@ -4185,15 +4510,30 @@ export interface components {
             type: "secret";
             validation?: components["schemas"]["CommandCenterFieldValidation"] | null;
         };
-        /** CreateAssetCategoryRequest */
+        /**
+         * CreateAssetCategoryRequest
+         * @description Create one named grouping and optionally establish its initial Asset membership.
+         */
         CreateAssetCategoryRequest: {
-            /** Assets */
+            /**
+             * Assets
+             * @description Optional complete initial set of canonical Asset uids assigned to the category.
+             */
             assets?: string[] | null;
-            /** Description */
+            /**
+             * Description
+             * @description Optional explanation of the category's intended membership or use.
+             */
             description?: string | null;
-            /** Display Name */
+            /**
+             * Display Name
+             * @description Human-readable category name shown in Markets.
+             */
             display_name: string;
-            /** Unique Identifier */
+            /**
+             * Unique Identifier
+             * @description Optional stable business identifier; the service derives one when omitted.
+             */
             unique_identifier?: string | null;
         };
         /**
@@ -4579,31 +4919,56 @@ export interface components {
         };
         /**
          * Index
-         * @description User-facing market index reference row.
+         * @description Canonical market index identity table keyed by uid and unique_identifier. Stores index type, display metadata, and structured metadata used by derivative contracts, fixings, conventions, and curves.
          */
         Index: {
-            /** Calculation Method */
+            /**
+             * Calculation Method
+             * @description Formula when core calculates values; custom when code supplies them.
+             */
             calculation_method: string;
-            /** Description */
+            /**
+             * Description
+             * @description Human-readable description of the registry row and its intended use.
+             */
             description?: string | null;
-            /** Display Name */
+            /**
+             * Display Name
+             * @description Human-readable display name for UI, logs, and operator workflows.
+             */
             display_name: string;
-            /** Index Type */
+            /**
+             * Index Type
+             * @description Canonical index type code used to classify rows in IndexTable.
+             */
             index_type: string;
-            /** Metadata Json */
+            /**
+             * Metadata Json
+             * @description Structured metadata JSON for source, application, or workflow-specific attributes.
+             */
             metadata_json?: {
                 [key: string]: unknown;
             } | null;
             /**
              * Uid
              * Format: uuid
+             * @description Canonical UUID primary key for this MetaTable row.
              */
             uid: string;
-            /** Unique Identifier */
+            /**
+             * Unique Identifier
+             * @description Stable business identifier used for idempotent upserts, lookup, and joins.
+             */
             unique_identifier: string;
-            /** Value Format */
+            /**
+             * Value Format
+             * @description Decimal or percent presentation without changing stored values.
+             */
             value_format: string;
-            /** Value Suffix */
+            /**
+             * Value Suffix
+             * @description Optional display suffix such as bp or USD.
+             */
             value_suffix?: string | null;
         };
         /**
@@ -4855,22 +5220,35 @@ export interface components {
         };
         /**
          * IndexType
-         * @description Typed row for the index type registry.
+         * @description Index type registry keyed by index_type. Documents and validates allowed Index.index_type values such as interest-rate indexes without embedding pricing conventions.
          */
         IndexType: {
-            /** Description */
+            /**
+             * Description
+             * @description Human-readable description of the registry row and its intended use.
+             */
             description?: string | null;
-            /** Display Name */
+            /**
+             * Display Name
+             * @description Human-readable display name for UI, logs, and operator workflows.
+             */
             display_name?: string | null;
-            /** Index Type */
+            /**
+             * Index Type
+             * @description Canonical index type code used to classify rows in IndexTable.
+             */
             index_type: string;
-            /** Metadata Json */
+            /**
+             * Metadata Json
+             * @description Structured metadata JSON for source, application, or workflow-specific attributes.
+             */
             metadata_json?: {
                 [key: string]: unknown;
             } | null;
             /**
              * Uid
              * Format: uuid
+             * @description Canonical UUID primary key for this MetaTable row.
              */
             uid: string;
         };
@@ -4896,46 +5274,79 @@ export interface components {
             /** Value Suffix */
             value_suffix?: string | null;
         };
-        /** PatchAssetCategoryRequest */
+        /**
+         * PatchAssetCategoryRequest
+         * @description Update category display fields or replace its complete Asset membership set.
+         */
         PatchAssetCategoryRequest: {
-            /** Assets */
+            /**
+             * Assets
+             * @description Replacement complete set of canonical Asset uids. Omit the field to preserve current membership; pass an empty list to remove all memberships.
+             */
             assets?: string[] | null;
-            /** Description */
+            /**
+             * Description
+             * @description Replacement category description; null clears the existing description.
+             */
             description?: string | null;
-            /** Display Name */
+            /**
+             * Display Name
+             * @description Replacement human-readable category name.
+             */
             display_name?: string | null;
         };
         /**
          * Portfolio
-         * @description Typed portfolio identity and runtime configuration row.
+         * @description Portfolio identity and configuration table keyed by unique_identifier. Stores required calendar linkage, optional published index linkage, and DataNode pointers used to publish portfolio weights, signals, and values.
          */
         Portfolio: {
             /**
              * Backtest Table Price Column Name
+             * @description Column name used as the portfolio backtest price field when reading price tables.
              * @default close
              */
             backtest_table_price_column_name: string;
             /**
              * Calendar Uid
              * Format: uuid
+             * @description CalendarTable.uid for the persisted calendar used to schedule this portfolio.
              */
             calendar_uid: string;
-            /** Portfolio Data Node Uid */
+            /**
+             * Portfolio Data Node Uid
+             * @description Platform DataNodeUpdate.uid for the portfolio-level data producer.
+             */
             portfolio_data_node_uid?: string | null;
-            /** Portfolio Weights Data Node Uid */
+            /**
+             * Portfolio Weights Data Node Uid
+             * @description Platform DataNodeUpdate.uid for the portfolio weights producer.
+             */
             portfolio_weights_data_node_uid?: string | null;
-            /** Published Index Uid */
+            /**
+             * Published Index Uid
+             * @description Optional IndexTable.uid used when this portfolio is published as an index-like observable. Core portfolio weights and values use PortfolioTable identity instead.
+             */
             published_index_uid?: string | null;
-            /** Signal Uid */
+            /**
+             * Signal Uid
+             * @description Optional SignalMetadataTable.signal_uid for the signal currently used by this portfolio. Populated by portfolio workflow pointer updates after signal metadata has been persisted.
+             */
             signal_uid?: string | null;
-            /** Signal Weights Data Node Uid */
+            /**
+             * Signal Weights Data Node Uid
+             * @description Platform DataNodeUpdate.uid for the signal weights producer.
+             */
             signal_weights_data_node_uid?: string | null;
             /**
              * Uid
              * Format: uuid
+             * @description Canonical UUID primary key for this MetaTable row.
              */
             uid: string;
-            /** Unique Identifier */
+            /**
+             * Unique Identifier
+             * @description Stable business identifier used for idempotent upserts, lookup, and joins.
+             */
             unique_identifier: string;
         };
         /** PortfolioBulkCascadeDeleteResponse */
@@ -5062,23 +5473,36 @@ export interface components {
         };
         /**
          * PortfolioGroup
-         * @description Typed portfolio group row for many-to-many portfolio classification.
+         * @description Portfolio group registry keyed by unique_identifier. Defines reusable many-to-many classifications for portfolios such as strategy sleeves, client views, research cohorts, or operational reporting buckets.
          */
         PortfolioGroup: {
-            /** Description */
+            /**
+             * Description
+             * @description Free-form description of the group membership intent.
+             */
             description?: string | null;
-            /** Display Name */
+            /**
+             * Display Name
+             * @description Human-readable name for this portfolio group.
+             */
             display_name: string;
-            /** Metadata Json */
+            /**
+             * Metadata Json
+             * @description Optional JSON metadata for group provenance or labels.
+             */
             metadata_json?: {
                 [key: string]: unknown;
             } | null;
             /**
              * Uid
              * Format: uuid
+             * @description Stable portfolio group identity referenced by membership rows.
              */
             uid: string;
-            /** Unique Identifier */
+            /**
+             * Unique Identifier
+             * @description Stable group identifier used for idempotent upserts and lookup.
+             */
             unique_identifier: string;
         };
         /** PortfolioGroupCreateRequest */
@@ -5106,22 +5530,25 @@ export interface components {
         };
         /**
          * PortfolioGroupMembership
-         * @description Typed membership row between a portfolio group and a portfolio.
+         * @description Many-to-many portfolio group membership table. Each row links one PortfolioGroupTable row to one PortfolioTable row, with cascade cleanup of membership rows when either side is deleted.
          */
         PortfolioGroupMembership: {
             /**
              * Portfolio Group Uid
              * Format: uuid
+             * @description Foreign key to the owning PortfolioGroupTable.uid row.
              */
             portfolio_group_uid: string;
             /**
              * Portfolio Uid
              * Format: uuid
+             * @description Foreign key to the assigned PortfolioTable.uid row.
              */
             portfolio_uid: string;
             /**
              * Uid
              * Format: uuid
+             * @description Stable portfolio group membership row identity.
              */
             uid: string;
         };
@@ -5154,17 +5581,24 @@ export interface components {
         };
         /**
          * PortfolioMetadata
-         * @description Typed human-facing portfolio metadata row.
+         * @description Portfolio metadata table keyed by unique_identifier. Stores human-facing descriptive metadata for portfolios without changing PortfolioTable identity fields.
          */
         PortfolioMetadata: {
-            /** Description */
+            /**
+             * Description
+             * @description Human-readable description of the registry row and its intended use.
+             */
             description?: string | null;
             /**
              * Uid
              * Format: uuid
+             * @description Canonical UUID primary key for this MetaTable row.
              */
             uid: string;
-            /** Unique Identifier */
+            /**
+             * Unique Identifier
+             * @description Stable business identifier used for idempotent upserts, lookup, and joins.
+             */
             unique_identifier: string;
         };
         /** PortfolioSignalDeleteResponse */
@@ -5907,16 +6341,23 @@ export interface components {
         };
         /**
          * SignalMetadata
-         * @description Typed metadata row for a canonical portfolio signal.
+         * @description Signal metadata table keyed by signal_uid. Stores descriptive text for canonical portfolio signals used by signal-weight DataNode outputs and portfolio signal pointers.
          */
         SignalMetadata: {
-            /** Signal Description */
+            /**
+             * Signal Description
+             * @description Human-readable plain-text or Markdown description of the signal definition. HTML tags are not part of the rendering contract.
+             */
             signal_description?: string | null;
-            /** Signal Uid */
+            /**
+             * Signal Uid
+             * @description Stable unique identifier for the signal definition.
+             */
             signal_uid: string;
             /**
              * Uid
              * Format: uuid
+             * @description Canonical UUID primary key for this MetaTable row.
              */
             uid: string;
         };
@@ -6157,25 +6598,31 @@ export interface components {
         };
         /**
          * VirtualFund
-         * @description Typed virtual-fund row bound to an account and portfolio.
+         * @description Virtual-fund registry keyed by unique_identifier. A virtual fund is not an asset or a custody account; it is an account-owned allocation view over real account holdings that targets one PortfolioTable row.
          */
         VirtualFund: {
             /**
              * Account Uid
              * Format: uuid
+             * @description AccountTable.uid for the account that owns this virtual-fund view.
              */
             account_uid: string;
             /**
              * Target Portfolio Uid
              * Format: uuid
+             * @description Foreign key to PortfolioTable.uid for the target portfolio.
              */
             target_portfolio_uid: string;
             /**
              * Uid
              * Format: uuid
+             * @description Canonical UUID primary key for this MetaTable row.
              */
             uid: string;
-            /** Unique Identifier */
+            /**
+             * Unique Identifier
+             * @description Stable business identifier used for idempotent upserts, lookup, and joins.
+             */
             unique_identifier: string;
         };
         /** VirtualFundDetailLinks */
@@ -7364,7 +7811,9 @@ export interface operations {
                 numeric?: boolean;
                 /** @description Require a registered time-indexed MetaTable. */
                 timestamped?: boolean;
+                /** @description Maximum related MetaTables to return. */
                 limit?: number;
+                /** @description Zero-based offset into the related MetaTable list. */
                 offset?: number;
             };
             header?: never;
