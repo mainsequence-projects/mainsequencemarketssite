@@ -155,7 +155,7 @@ Keep these distinctions:
   fixed SDK workload build are backend-owned. Never design an `extension_id`,
   image selector, build command, environment, active deployment, or a second
   publication-attempt system.
-- Workflow API `2.0.0` can carry non-secret target-owned `env_vars` for Jobs,
+- Workflow APIs `2.0.0` and `2.1.0` can carry non-secret target-owned `env_vars` for Jobs,
   runtime ResourceReleases, and Project Coding Agents. Static sites use
   `build_environment`; widget extensions accept neither. These literals configure only the declared target or
   its backing Job: they do not create or resolve platform Secrets/Constants,
@@ -372,7 +372,7 @@ consumer.
 When a component requires process configuration, record the required variable
 names, non-secret value intent, target ownership, and secret exclusions in its
 existing constraints, decisions, dependencies, and acceptance criteria. The
-implementation handoff uses the live `project-workflows` API `2.0.0` template.
+implementation handoff uses the live `project-workflows` API `2.1.0` template.
 Do not add a second Blueprint environment-variable domain or represent a
 workflow literal as a platform Secret/Constant resource.
 
@@ -467,7 +467,7 @@ Direct manual Job creation selects one already-ready exact project image.
 Direct automatic Job creation does not accept an image selector: the backend
 derives one exact initial image from the ProjectBranch's persisted synchronized
 commit and owns its preparation. Workflow Job declarations likewise carry no
-image or commit selectors: workflow API `2.0.0` derives the exact image from
+image or commit selectors: workflow API `2.1.0` derives the exact image from
 the immutable repository event. Neither automatic path resolves branch HEAD at
 runtime or persists an image-less Job.
 
@@ -612,6 +612,16 @@ Record:
   promotion rule is accepted; omit it for the backend-generated branch SemVer
   default or use null for every commit; and
 - observable acceptance criteria.
+
+When an accepted Static Site must appear in Command Center navigation, record
+the intended label, allowlisted icon, enabled state, and recipient category in
+that Static Site's constraints and acceptance criteria. The implementation
+handoff uses the workflow's nested `navigation_link`; it does not add a
+top-level Blueprint links domain. Record that a human grant for the exact
+ProjectBranch, workflow path, resource key, and maximum audience is a
+precondition. Do not treat repository access, Project edit authority, Git
+identity, or the automation identity as audience approval, and do not claim
+placement grants target access.
 
 Represent an API dependency through `depends_on`, using its `apis.<key>`
 reference. Do not invent a build-environment variable name in project design;

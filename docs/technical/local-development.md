@@ -31,7 +31,8 @@ under `debugpy` at `http://127.0.0.1:8001`, then starts Vite under the Node debu
 wrapper and leaves `MSM_AUTO_REGISTER_NAMESPACE` unset. **Markets API (8001)** and **Markets
 Frontend (3010)** can also be launched independently. Both processes use strict ports, so stop an
 existing listener before starting the corresponding debugger. Embedded deployments do not use the
-direct URL and instead target the release identified by `VITE_FASTAPI_RELEASE_UID`.
+direct URL and instead target the release identified by `VITE_FASTAPI_RELEASE_UID`. Production
+builds fail closed outside the Command Center iframe.
 
 For iframe testing, set `VITE_FASTAPI_RELEASE_UID` to the intended target release and
 `VITE_COMMAND_CENTER_ORIGIN` to the exact local parent origin. The application uses the SDK
@@ -52,7 +53,7 @@ npm run build
 npm run test:e2e
 ```
 
-The E2E suite intercepts the configured standalone API origin with deterministic fixture responses
+The E2E suite enables its explicit test-only direct API path with deterministic fixture responses
 and exercises the embedded SDK delegated FastAPI transport against the same fixtures. It never
 mutates a live Markets deployment. The test-only build flag mounts a real SDK `StaticSiteIframe`
 host at `/__iframe-host`; it is set by `npm run test:e2e` and is absent from ordinary builds.

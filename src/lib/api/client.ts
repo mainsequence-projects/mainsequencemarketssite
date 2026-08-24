@@ -109,7 +109,7 @@ export function resolveApiUrl(
   const origin = rawBaseUrl
     ? loadRuntimeConfiguration({ apiBaseUrl: rawBaseUrl, embedded: false }).apiOrigin
     : loadRuntimeConfiguration().apiOrigin;
-  if (!origin) throw new Error("A standalone API origin is required to resolve an absolute URL.");
+  if (!origin) throw new Error("A local development API origin is required to resolve an absolute URL.");
   const url = new URL(normalizedPath, origin);
   return url.toString();
 }

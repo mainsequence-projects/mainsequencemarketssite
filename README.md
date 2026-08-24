@@ -1,9 +1,9 @@
 # Main Sequence Markets
 
-Standalone and embeddable Vite/React application for the `mainsequencemarkets` `apps/v1` API.
-Embedded builds call the configured FastAPI ResourceRelease through the Command Center SDK's
-short-lived delegated iframe transport. Standalone local development can call one exact configured
-API origin directly. Controlled standalone navigation, resource views, themes, and the static-site
+Embedded Vite/React application for the `mainsequencemarkets` `apps/v1` API. Production builds call
+the configured FastAPI ResourceRelease through the Command Center SDK's short-lived delegated
+iframe transport. Local development can call one exact configured API origin directly. Controlled
+Markets navigation, resource views, themes, and the static-site
 iframe lifecycle come from `@dev-mainsequence/command-center-sdk`.
 
 ## Run locally
@@ -18,8 +18,8 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Standalone mode requires `VITE_API_BASE_URL` to be an exact HTTP(S) origin. Embedded mode requires
-`VITE_FASTAPI_RELEASE_UID`; the static-site platform injects the reserved exact
+Local Vite development requires `VITE_API_BASE_URL` to be an exact HTTP(S) origin. Embedded
+production requires `VITE_FASTAPI_RELEASE_UID`; the static-site platform injects the reserved exact
 `VITE_COMMAND_CENTER_ORIGIN` for the Command Center host.
 
 ### Debug the full stack in VS Code
@@ -43,10 +43,11 @@ one process needs debugging.
 Markets** for the registered `main` ProjectBranch. Every synchronized `main` commit is eligible for
 automatic rebuild and deployment. The remote builder installs the repository-contained Command
 Center SDK `0.1.13` archive, so it does not depend on a developer-local path or an unpinned registry
-package. Its public build environment contains the stable `main` Markets FastAPI ResourceRelease
-UID. Automatic API redeployments keep that identity, while the SDK obtains the current opaque RPC
-endpoint and delegated credential at request time; the workflow must not copy a runtime URL or
-credential into the browser bundle.
+package. Its public build environment contains only the stable `main` Markets FastAPI
+ResourceRelease UID. Automatic API redeployments keep that identity, while the SDK obtains the
+current opaque RPC endpoint and delegated credential at request time; the workflow must not copy a
+runtime URL or credential into the browser bundle. The production site is embedded-only and retains
+the complete Markets-owned left navigation inside Command Center.
 
 ## Verification
 
@@ -62,18 +63,18 @@ npm run test:e2e
 
 ## Documentation
 
-- [Architecture](docs/architecture.md)
-- [Local development](docs/local-development.md)
-- [API contract](docs/api-contract.md)
-- [Route compatibility](docs/route-compatibility.md)
-- [Embedding and security](docs/embedding-security.md)
-- [Deployment and rollback](docs/deployment-and-rollback.md)
-- [Implementation plan](docs/implementation_tasks/001_mainsequence_markets_site_refactor.md)
-- [Full SDK refactor implementation](docs/implementation_tasks/002_command_center_sdk_normalization.md)
-- [SDK alignment plan (0.1.3 baseline)](docs/implementation_tasks/003_command_center_sdk_0_1_3_alignment.md)
+Documentation is divided by audience:
+
+- [Application surfaces](docs/surfaces/index.md) explains the views and actions people use. Its
+  hierarchy mirrors the left navigation: Assets, Portfolios, Managed Accounts, Pricing, and
+  Platform.
+- [Technical documentation](docs/technical/index.md) covers architecture, development, API
+  contracts, security, deployment, change history, and implementation plans.
+- [Complete documentation map](docs/SUMMARY.md)
 
 The SDK alignment baseline is implemented against the repository-contained SDK `0.1.13` package.
-All 25 backend collections and discovery operations are captured in the pinned OpenAPI document,
+All 25 backend collections and discovery operations are captured in the
+[pinned OpenAPI document](docs/technical/contracts/mainsequencemarkets-openapi.json),
 and account and pricing-curve views use distinct canonical detail and summary operations. Applying
 and observing the authenticated platform release remains a separate deployment step after this
 repository change is committed and synchronized.

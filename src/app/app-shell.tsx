@@ -213,15 +213,6 @@ export function AppShell({ children }: { children: ReactNode }) {
     );
   }
 
-  if (runtime.configuration.embedded) {
-    return (
-      <div className="embedded-app">
-        <a className="skip-link" href="#main-content">Skip to content</a>
-        {children}
-      </div>
-    );
-  }
-
   return (
     <ApplicationNavigationShell
       activeApplicationId={activeApplicationId}

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Restored the complete Markets-owned sidebar in embedded mode and added iframe regression
+  coverage for all five application sections and their destination groups.
+- Made production explicitly embedded-only: the deployed workflow exposes only the stable FastAPI
+  release UID, all production requests use delegated `fetchFastApi`, and direct API origins remain
+  limited to local development and the E2E harness.
+- Split the documentation into a technical reference and a human-facing surface guide whose
+  hierarchy mirrors the application navigation.
 - Upgraded the vendored Command Center SDK and installed skill bundle to `0.1.13`, refreshed the
   FastAPI OpenAPI artifact to 158 operations, and switched account and pricing-curve activation to
   canonical row details while retaining summaries as separate detail tabs.
@@ -16,8 +23,8 @@
 - Upgraded the repository-contained Command Center SDK and project skill bundle to `0.1.11`,
   replaced the custom standalone sidebar with the public controlled application navigation shell,
   and retained SDK theme presets and closed tokens across all chrome and content surfaces.
-- Removed the misleading standalone gateway-session indicator and application-owned theme switch;
-  standalone mode uses the default SDK preset and iframe mode follows repeated host theme updates.
+- Removed the misleading local-direct gateway-session indicator and application-owned theme switch;
+  local development uses the default SDK preset and iframe mode follows repeated host theme updates.
 - Added the `main`-only **Main Sequence Markets** static-site workflow with automatic redeployment,
   Vite/Node 24 build settings, SPA fallback, and the stable production Markets FastAPI release UID.
   The SDK resolves the release's current opaque RPC endpoint at request time, so automatic API

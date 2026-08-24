@@ -60,7 +60,7 @@ export function ApiDiagnosticsPage() {
               ? "SDK delegated FastAPI credential"
               : "Authenticated browser gateway session",
             credentials_policy: configuration.embedded ? "memory-only delegated bearer" : "include",
-            embed_mode: configuration.embedded ? "embedded" : "standalone",
+            embed_mode: configuration.embedded ? "embedded" : "local-direct",
             transport_status: runtime.fastApiState?.status ?? (configuration.embedded ? "idle" : "direct"),
             public_user_context: runtime.userUid,
           }} />
@@ -97,7 +97,7 @@ function settingsSummary(runtime: ReturnType<typeof useRuntime>): EntitySummaryM
     entity: { id: target ?? "markets-api", type: "Markets API", title: "API Diagnostics" },
     badges: [{
       key: "mode",
-      label: runtime.configuration.embedded ? "Embedded" : "Standalone",
+      label: runtime.configuration.embedded ? "Embedded" : "Local development",
       tone: "info",
     }],
     inline_fields: [{

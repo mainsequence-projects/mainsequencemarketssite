@@ -1,0 +1,4 @@
+interface:
+  display_name: "Maintain Markets Site Documentation"
+  short_description: "Keep technical and surface docs aligned"
+  default_prompt: "Use $maintain-markets-site-documentation to update the documentation for a changed Markets view and validate the result."

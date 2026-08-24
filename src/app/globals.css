@@ -37,7 +37,6 @@ code, pre { font-family: var(--font-mono); }
 
 .markets-navigation-shell { height: 100vh; min-height: 100vh; background: var(--background); }
 .markets-navigation-content { color: var(--foreground); background: var(--background); }
-.embedded-app { min-height: 100vh; color: var(--foreground); background: var(--background); }
 .brand-mark {
   width: 34px; height: 34px; flex: none; display: grid; place-items: center;
   color: var(--primary); background: color-mix(in srgb, var(--primary) 10%, var(--card));

@@ -1,7 +1,9 @@
 export const API_CONFIGURATION_MESSAGE =
-  "Standalone mode requires VITE_API_BASE_URL to be the exact HTTP(S) origin of the deployed Markets API.";
+  "Local development requires VITE_API_BASE_URL to be the exact HTTP(S) origin of the Markets API.";
 export const FASTAPI_RELEASE_CONFIGURATION_MESSAGE =
   "Embedded mode requires VITE_FASTAPI_RELEASE_UID to identify the deployed Markets FastAPI release.";
+export const EMBEDDED_PRODUCTION_CONFIGURATION_MESSAGE =
+  "Production Markets builds must be opened as an embedded Command Center application.";
 
 export class RuntimeConfigurationError extends Error {
   constructor(message: string) {
@@ -48,6 +50,7 @@ export function exactHttpOrigin(raw: string | undefined, label: string): string 
 }
 
 type RuntimeConfigurationInput = {
+  allowDirectApi?: boolean;
   apiBaseUrl?: string;
   commandCenterOrigin?: string;
   embedded?: boolean;
@@ -56,6 +59,7 @@ type RuntimeConfigurationInput = {
 
 export function loadRuntimeConfiguration(input?: RuntimeConfigurationInput): RuntimeConfiguration {
   const source = input ?? {
+    allowDirectApi: import.meta.env.DEV || import.meta.env.VITE_E2E_HOST === "true",
     apiBaseUrl: import.meta.env.VITE_API_BASE_URL,
     commandCenterOrigin: import.meta.env.VITE_COMMAND_CENTER_ORIGIN,
     fastApiReleaseUid: import.meta.env.VITE_FASTAPI_RELEASE_UID,
@@ -80,6 +84,11 @@ export function loadRuntimeConfiguration(input?: RuntimeConfigurationInput): Run
   }
   if (embedded && !fastApiReleaseUid) {
     throw new RuntimeConfigurationError(FASTAPI_RELEASE_CONFIGURATION_MESSAGE);
+  }
+  const allowDirectApi = source.allowDirectApi
+    ?? (import.meta.env.DEV || import.meta.env.VITE_E2E_HOST === "true");
+  if (!embedded && !allowDirectApi) {
+    throw new RuntimeConfigurationError(EMBEDDED_PRODUCTION_CONFIGURATION_MESSAGE);
   }
   if (!embedded && !apiOrigin) throw new RuntimeConfigurationError(API_CONFIGURATION_MESSAGE);
 

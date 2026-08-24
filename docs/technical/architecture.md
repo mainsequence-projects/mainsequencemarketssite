@@ -2,11 +2,11 @@
 
 ## Ownership
 
-This repository owns Markets route state, the optional standalone shell, operation dialogs, API
-transport, and domain content. When embedded, Main Command Center owns global navigation,
-application selection, account/global settings, session chrome, and global branding; the child
-renders only its selected route content. The Command Center SDK owns controlled standalone
-navigation, generic resource-view composition and lifecycle, theme, and static-site iframe
+This repository owns Markets route state, its internal application navigation, operation dialogs,
+API transport, and domain content. When embedded, Main Command Center owns global navigation,
+account/global settings, session chrome, and global branding; the child retains the complete
+Markets navigation hierarchy and its route content. The Command Center SDK owns controlled
+application navigation, generic resource-view composition and lifecycle, theme, and static-site iframe
 lifecycles. The `mainsequencemarkets`
 service owns financial/domain logic, authorization, the canonical OpenAPI contract, and discovered
 bulk-action availability.
@@ -24,18 +24,18 @@ The repository root is one Vite package:
 - `src/lib/embed/` connects the SDK static-site iframe client; and
 - `src/themes/` applies presets from the SDK theme entrypoint.
 
-Standalone navigation uses SDK `ApplicationNavigationShell` from the public `/navigation`
+Markets navigation uses SDK `ApplicationNavigationShell` from the public `/navigation`
 entrypoint. The rail contains five stable application sections—Assets, Portfolios, Managed
 Accounts, Pricing, and Platform—and each section opens its own grouped destination submenu. SDK
 navigation intents are translated into the project-owned History API router. The SDK owns the rail,
 grouped destination panel, active state, collapse behavior, keyboard navigation, focus treatment,
-and tooltips. The application owns route paths. It has no application-owned theme or session
-controls: standalone mode uses the default SDK preset, while embedded mode follows every theme
-context update sent by the Command Center SDK host.
-Embedded mode intentionally omits this shell because Main Command Center owns global application
-navigation.
+and tooltips. The application owns route paths. This shell renders in embedded production and in
+local direct development because it is Markets-owned navigation, not a copy of Command Center's
+global application rail. The application has no account, session, or theme controls: local direct
+development uses the default SDK preset, while embedded mode follows every theme context update
+sent by the Command Center SDK host.
 
-The SDK theme preset is applied to the document root in both standalone and embedded modes. SDK
+The SDK theme preset is applied to the document root in both local-direct and embedded modes. SDK
 navigation and resource views consume the published variables directly, while application CSS uses
 only published tokens or aliases derived from them. The closed-token theme audit is a required build
 gate.
@@ -65,11 +65,11 @@ deep-link and back/forward behavior while producing a clean production dependenc
 
 ## Request boundary
 
-The API client accepts only application-relative paths and resolves them against one validated
-`VITE_API_BASE_URL` in standalone mode. Embedded requests use the configured FastAPI release UID and
-the SDK's memory-only delegated credential transport. Standalone requests use
-`credentials: include`, allowing the deployed authenticated gateway to establish user identity. The
-application never constructs or persists a delegated authorization header itself.
+The API client accepts only application-relative paths. Embedded production uses the configured
+FastAPI release UID and the SDK's memory-only delegated credential transport. Direct requests are
+enabled only by Vite development mode or the explicit E2E harness and resolve against one validated
+`VITE_API_BASE_URL`; they are not a production deployment mode. The application never constructs or
+persists a delegated authorization header itself.
 
 ## UI states
 

@@ -51,15 +51,16 @@ from the exact configured parent origin.
 
 When embedded, Main Command Center owns:
 
-- global and application navigation;
-- application selection and switching;
+- its global navigation;
+- Command Center application selection and switching;
 - account, session, and organization chrome;
 - global settings; and
 - MainSequence branding.
 
-The child must therefore render only Markets route content after initialization. A standalone shell
-may remain for local development or direct deployment, but it must be selected explicitly from
-runtime mode and must never appear inside the Command Center iframe.
+The child retains its complete Markets-owned application hierarchy and route content after
+initialization. The Markets rail is internal navigation, not duplicated Command Center chrome.
+Direct API mode remains available only for local development and the E2E harness; production is
+embedded-only.
 
 ### Theme integration
 
@@ -71,8 +72,8 @@ tokens.
 ### Application-owned routes
 
 The existing History API routes and route URLs remain application-owned for compatibility. The
-`/settings` route may remain as Markets API diagnostics/metadata, but it must not present itself as
-Command Center global settings and must not appear in embedded global navigation.
+`/settings` route remains Markets API diagnostics/metadata. It does not present itself as Command
+Center global settings and appears only in the child application's Platform section.
 
 ### Resource collections
 
@@ -302,10 +303,10 @@ OpenAPI contract formally declares its accepted keys and the backend applies aut
 Files centered on: `src/app/app-shell.tsx`, runtime/bootstrap code, router tests, and shell
 styles.
 
-- branch on the normalized runtime `embedded` state after iframe initialization;
-- render a thin content root in embedded mode with no sidebar, topbar, MainSequence branding,
-  settings navigation, session status, app switcher, or account controls;
-- retain the current shell only for explicit standalone mode;
+- gate rendering on the normalized runtime initialization state;
+- render the complete Markets-owned navigation in embedded mode without account, session, theme,
+  or Command Center-global controls;
+- retain direct API transport only for local development and the E2E harness;
 - keep all existing application routes and direct-route behavior;
 - rename/reframe `/settings` as Markets API diagnostics/metadata if the route remains; and
 - ensure focus entry and skip-link behavior still reach each route's `main-content` target.
@@ -392,8 +393,8 @@ compatibility flag or fallback discovery route is allowed.
 | Concern | Required evidence |
 | --- | --- |
 | Package boundary | SDK 0.1.3 resolves through the editable link; only public imports; React and ReactDOM deduplicated. |
-| Embedded ownership | Browser test proves embedded pages contain no child global nav/topbar/branding/settings/session chrome. |
-| Standalone compatibility | Direct list/detail routes retain the optional standalone shell and route navigation. |
+| Embedded ownership | Browser test proves embedded pages retain all Markets sections without account, session, theme, or Command Center-global controls. |
+| Local compatibility | Direct list/detail routes retain Markets navigation only in development and the E2E harness. |
 | Collections | Search, each declared filter, pagination, refresh, activation, empty/no-results/error states, and abort behavior. |
 | Sorting | No sort affordance or `ordering` request until OpenAPI declares it. |
 | Details | Loading, error/retry, summary, breadcrumbs, controlled tabs, related lists, and header actions. |
@@ -441,11 +442,11 @@ restore unsupported sorting or duplicate embedded global chrome as an undocument
 All frontend-owned phases are implemented against
 `@dev-mainsequence/command-center-sdk@0.1.13`.
 
-- Embedded mode now renders a thin route-content root. The standalone sidebar, topbar, branding,
-  API Diagnostics navigation, and application-owned theme/session controls never render after iframe
-  initialization.
-- The standalone shell and all stable route paths remain available. `/settings` is presented as
-  Markets **API Diagnostics**, not Command Center global settings.
+- Embedded mode renders the complete Markets-owned sidebar and route shell. Account, session,
+  application-owned theme, and Command Center-global controls remain outside the child application.
+- Direct API transport and all stable route paths remain available for local development and the
+  E2E harness. `/settings` is presented as Markets **API Diagnostics**, not Command Center global
+  settings.
 - All primary and embedded lists accept `command-center.resource_collection@v1` directly. Search,
   filters, ordering, visible columns, identity, and bulk actions come from
   `command-center.resource_discovery@v1`.

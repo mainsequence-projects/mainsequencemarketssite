@@ -46,8 +46,9 @@ describe("runtime configuration", () => {
     });
   });
 
-  it("allows standalone mode without a parent origin", () => {
+  it("allows direct API mode for local development without a parent origin", () => {
     expect(loadRuntimeConfiguration({
+      allowDirectApi: true,
       apiBaseUrl: "https://markets.example.com",
       embedded: false,
     })).toEqual({
@@ -56,5 +57,13 @@ describe("runtime configuration", () => {
       embedded: false,
       fastApiReleaseUid: null,
     });
+  });
+
+  it("rejects direct API mode in production even when an API origin is present", () => {
+    expect(() => loadRuntimeConfiguration({
+      allowDirectApi: false,
+      apiBaseUrl: "https://markets.example.com",
+      embedded: false,
+    })).toThrow(/must be opened as an embedded Command Center application/);
   });
 });

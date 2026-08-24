@@ -2,7 +2,7 @@
 
 ## Configuration
 
-- `VITE_API_BASE_URL`: required exact API origin in standalone mode only.
+- `VITE_API_BASE_URL`: required exact API origin for local direct development only.
 - `VITE_FASTAPI_RELEASE_UID`: required target ResourceRelease UID in embedded mode.
 - `VITE_COMMAND_CENTER_ORIGIN`: required exact parent origin in embedded mode and injected by the
   static-site platform for deployed builds.
@@ -29,15 +29,16 @@ payload limit. `userUid` is untrusted display/routing context and never establis
 The parent must use the SDK `StaticSiteIframe` host so the same validation, reinitialization,
 timeout, sandbox, and teardown rules apply on both sides.
 
-After initialization, embedded mode renders only Markets route content. It does not render the
-standalone SDK navigation shell, topbar, API Diagnostics navigation, or application-owned theme
-and session controls. Main Command Center supplies global navigation, application selection,
-global settings, account/session chrome, branding, and the current SDK theme context. The optional
-standalone shell remains available only when the window is not embedded.
+After initialization, embedded mode renders the complete Markets-owned navigation shell: Assets,
+Portfolios, Managed Accounts, Pricing, Platform, and every destination beneath them. This is
+internal product navigation, not duplicated host chrome. Main Command Center continues to own its
+global navigation, global settings, account/session chrome, branding, and the current SDK theme
+context. Production builds fail closed when opened outside the Command Center iframe; direct API
+mode exists only for local development and the browser test harness.
 
 No session JWT, cookie, authorization header, email, name, organization, permissions, or backend
 credential may be added to the iframe context. For embedded requests, `fetchFastApi` obtains and
-contains a narrow, short-lived delegated credential in SDK memory; standalone development retains
+contains a narrow, short-lived delegated credential in SDK memory; local development retains
 the independent browser-gateway session flow.
 
 ## Required hosting headers
@@ -53,5 +54,5 @@ authorization.
 
 The browser suite mounts the child through the SDK `StaticSiteIframe` host and verifies the default
 `allow-forms allow-same-origin allow-scripts` sandbox, exact-origin handshake, delegated FastAPI
-requests, anonymous user context, embedded chrome boundary, repeated theme updates, payload
+requests, complete Markets navigation, anonymous user context, repeated theme updates, payload
 rejection, timeout behavior, and teardown.

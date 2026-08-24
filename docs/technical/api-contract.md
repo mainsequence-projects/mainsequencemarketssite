@@ -10,7 +10,7 @@ Generated TypeScript lives at `src/lib/api/generated.ts`. Resource definitions u
 
 1. Obtain `/openapi.json` from the intended compatible `mainsequencemarkets` API release.
 2. Review the diff, especially routes, request bodies, required fields, responses, and operation IDs.
-3. Replace `docs/contracts/mainsequencemarkets-openapi.json` with the reviewed artifact.
+3. Replace `docs/technical/contracts/mainsequencemarkets-openapi.json` with the reviewed artifact.
 4. Run `npm run api:generate` from the repository root.
 5. Run all verification commands.
 6. Update the route compatibility table and changelog for intentional changes.

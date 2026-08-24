@@ -181,7 +181,7 @@ mainsequencemarketssite/
 │   └── themes/
 ├── tests/
 ├── docs/
-│   └── implementation_tasks/
+│   └── technical/implementation-tasks/
 │       └── 001_mainsequence_markets_site_refactor/
 ```
 

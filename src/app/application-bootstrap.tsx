@@ -37,7 +37,7 @@ function ConfigurationError({ error }: { error: unknown }) {
         <p className="eyebrow">Configuration required</p>
         <h1>Markets cannot start</h1>
         <p>{message}</p>
-        <code>Configure VITE_API_BASE_URL and rebuild the static application.</code>
+        <code>Open Markets through Command Center. Use the VS Code full-stack launcher for local development.</code>
       </section>
     </main>
   );

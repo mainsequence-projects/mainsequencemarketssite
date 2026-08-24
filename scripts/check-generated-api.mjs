@@ -8,7 +8,7 @@ const generatedPath = join(temporaryDirectory, "generated.ts");
 const command = process.platform === "win32" ? "openapi-typescript.cmd" : "openapi-typescript";
 const result = spawnSync(
   join("node_modules", ".bin", command),
-  ["docs/contracts/mainsequencemarkets-openapi.json", "-o", generatedPath],
+  ["docs/technical/contracts/mainsequencemarkets-openapi.json", "-o", generatedPath],
   { cwd: process.cwd(), encoding: "utf8" },
 );
 

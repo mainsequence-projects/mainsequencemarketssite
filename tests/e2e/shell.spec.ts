@@ -174,7 +174,7 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("renders the standalone Markets shell and asset registry", async ({ page }) => {
+test("renders the local-direct Markets shell and asset registry", async ({ page }) => {
   await page.goto("/assets");
   const sectionRail = page.locator("[data-cc-navigation-rail]");
   await expect(sectionRail).toBeVisible();
@@ -282,7 +282,7 @@ test("places a custom domain action in the detail header and refreshes detail co
   await expect(page.getByText("2026-08-06", { exact: true })).toBeVisible();
 });
 
-test("receives SDK static-site context from an exact-origin iframe host", async ({ page }) => {
+test("renders the complete Markets navigation inside the SDK iframe host", async ({ page }) => {
   await page.goto("/__iframe-host");
   await expect(page.getByText("Host handshake ready")).toBeVisible();
   const frame = page.locator('iframe[title="Markets SDK test host"]');
@@ -291,7 +291,25 @@ test("receives SDK static-site context from an exact-origin iframe host", async 
   await expect(markets.getByRole("heading", { name: "Assets", level: 1 })).toBeVisible();
   await expect(markets.getByText("US91282CJL63", { exact: true })).toBeVisible();
   await expect(markets.locator("html")).toHaveAttribute("data-theme", "quartz-light");
-  const lightComputedTheme = await markets.locator(".embedded-app").evaluate((element) => {
+  const embeddedNavigation = markets.locator("[data-cc-navigation-rail]");
+  await expect(embeddedNavigation).toBeVisible();
+  await expect(embeddedNavigation.locator("[data-cc-navigation-application]")).toHaveCount(5);
+  for (const section of ["Assets", "Portfolios", "Managed Accounts", "Pricing", "Platform"]) {
+    await expect(embeddedNavigation.getByRole("button", { name: section, exact: true })).toBeVisible();
+  }
+  await expect(markets.getByText("Reference Data", { exact: true })).toBeVisible();
+  await expect(markets.getByRole("button", { name: "Master List", exact: true })).toHaveAttribute("aria-current", "page");
+  await embeddedNavigation.getByRole("button", { name: "Portfolios", exact: true }).click();
+  await expect(markets.getByRole("button", { name: "Portfolio Groups", exact: true })).toBeVisible();
+  await embeddedNavigation.getByRole("button", { name: "Managed Accounts", exact: true }).click();
+  await expect(markets.getByRole("button", { name: "Virtual Funds", exact: true })).toBeVisible();
+  await embeddedNavigation.getByRole("button", { name: "Pricing", exact: true }).click();
+  await expect(markets.getByRole("button", { name: "Market Data", exact: true })).toBeVisible();
+  await embeddedNavigation.getByRole("button", { name: "Platform", exact: true }).click();
+  await expect(markets.getByRole("button", { name: "API Diagnostics", exact: true })).toBeVisible();
+  await embeddedNavigation.getByRole("button", { name: "Assets", exact: true }).click();
+
+  const lightComputedTheme = await markets.locator(".markets-navigation-shell").evaluate((element) => {
     const root = document.documentElement;
     const resolveToken = (property: "backgroundColor" | "color" | "fontFamily", token: string) => {
       const probe = document.createElement("span");
@@ -314,14 +332,12 @@ test("receives SDK static-site context from an exact-origin iframe host", async 
   expect(lightComputedTheme.background).toBe(lightComputedTheme.backgroundToken);
   expect(lightComputedTheme.color).toBe(lightComputedTheme.colorToken);
   expect(lightComputedTheme.fontFamily).toBe(lightComputedTheme.fontToken);
-  await expect(markets.getByRole("navigation")).toHaveCount(0);
-  await expect(markets.locator(".topbar")).toHaveCount(0);
-  await expect(markets.getByText("MainSequence", { exact: true })).toHaveCount(0);
+  await expect(markets.locator(".topbar")).toBeVisible();
 
   await page.getByRole("button", { name: "Switch host theme" }).click();
   await expect(markets.locator("html")).toHaveAttribute("data-theme", "main-sequence-space");
   await expect(markets.locator("html")).toHaveAttribute("data-theme-mode", "dark");
-  const darkComputedTheme = await markets.locator(".embedded-app").evaluate((element) => {
+  const darkComputedTheme = await markets.locator(".markets-navigation-shell").evaluate((element) => {
     const root = document.documentElement;
     const probe = document.createElement("span");
     probe.style.backgroundColor = "var(--background)";
