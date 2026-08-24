@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Removed the root npm `packageManager` declaration that conflicted with the OpenAPI theme's
+  transitive Postman code-generator Yarn installer during platform builds.
 - Added a read-only Docusaurus API reference generated from the reviewed pinned OpenAPI contract:
   158 operation pages and 220 schema pages grouped by API-owned tag groups.
 - Added build-time generation and validation gates; generated MDX is excluded from Git and never
