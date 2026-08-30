@@ -1,4 +1,4 @@
-api_version: 2.0.0
+api_version: 2.1.0
 name: main-sequence-markets-static-site
 resources:
   - key: main-sequence-markets-site
@@ -6,7 +6,7 @@ resources:
     spec:
       release_kind: static_site
       name: Main Sequence Markets
-      root_directory: .
+      root_directory: ""
       framework: vite
       node_version: "24"
       output_directory: dist

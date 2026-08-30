@@ -136,8 +136,11 @@ Keep these distinctions:
   digests, provider handles, or readiness.
 - Concurrent target services requesting the same exact image build converge on
   one canonical attempt and attach independent parent dependencies. Ambiguous
-  submission remains on that attempt and is never blindly retried. Execution
-  accepts only verified digest-pinned dependencies and never a `latest` tag.
+  submission remains on that attempt during a bounded reconciliation window
+  and is never blindly retried. If no provider handle or output can be adopted
+  by the deadline, that attempt and its awaiting dependencies fail; a delayed
+  observation cannot rewind it. Execution accepts only verified digest-pinned
+  dependencies and never a `latest` tag.
 - When a runtime ResourceRelease is declared in `.mainsequence/workflows` with
   automatic deployment enabled, CodeRepository design does not select or require an
   image. The workflow ignores any image UID and validation accepts the
