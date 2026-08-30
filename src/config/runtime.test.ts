@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { exactHttpOrigin, loadRuntimeConfiguration, RuntimeConfigurationError } from "@/config/runtime";
 
 describe("runtime configuration", () => {
-  const fastApiReleaseUid = "5bfa6756-ed60-46a2-8057-66ec6cb4f814";
+  const fastApiReleaseUid = "62c2c7a4-eb2a-471e-8837-7e02c3c8fc09";
 
   it("accepts and normalizes exact HTTP origins", () => {
     expect(exactHttpOrigin("https://markets.example.com/", "origin")).toBe("https://markets.example.com");

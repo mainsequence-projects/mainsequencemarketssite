@@ -15,7 +15,7 @@ resources:
       build_environment:
         # Stable main FastAPI release identity. The SDK resolves its current
         # opaque RPC endpoint at request time after automatic API redeployments.
-        VITE_FASTAPI_RELEASE_UID: 5bfa6756-ed60-46a2-8057-66ec6cb4f814
+        VITE_FASTAPI_RELEASE_UID: 62c2c7a4-eb2a-471e-8837-7e02c3c8fc09
       automatic_redeployment:
         enabled: true
         tag_regex: null
