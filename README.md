@@ -42,12 +42,15 @@ configurations remain available when only one process needs debugging.
 
 ## Automatic deployment
 
-`.mainsequence/workflows/static-site.yaml` declares one Vite SPA release named **Main Sequence
-Markets** for the registered `main` ProjectBranch. Every synchronized `main` commit is eligible for
-automatic rebuild and deployment. The remote builder installs the repository-contained Command
+The repository declares two environment-scoped Vite SPA releases. The `development` branch deploys
+**Main Sequence Markets Development** through `static-site-development.yaml`; the `main` branch
+deploys **Main Sequence Markets** in Production through `static-site.yaml`. Both workflow files
+live under `.mainsequence/workflows/` in both branches, so merging code preserves each environment's
+API target. Every synchronized commit is eligible for automatic rebuild and deployment in its
+matching environment. The remote builder installs the repository-contained Command
 Center SDK `0.1.13` archive, so it does not depend on a developer-local path or an unpinned registry
-package. Its public build environment contains only the stable `main` Markets FastAPI
-ResourceRelease UID. Automatic API redeployments keep that identity, while the SDK obtains the
+package. Each release's public build environment contains only its environment's stable Markets
+FastAPI ResourceRelease UID. Automatic API redeployments keep that identity, while the SDK obtains the
 current opaque RPC endpoint and delegated credential at request time; the workflow must not copy a
 runtime URL or credential into the browser bundle. The production site is embedded-only and retains
 the complete Markets-owned left navigation inside Command Center.

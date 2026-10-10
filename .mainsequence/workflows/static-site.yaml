@@ -1,10 +1,11 @@
-api_version: 2.1.0
+api_version: 2.3.0
 name: main-sequence-markets-static-site
+scope:
+  environments: [Production]
 resources:
   - key: main-sequence-markets-site
-    kind: resource_release
+    kind: static_site
     spec:
-      release_kind: static_site
       name: Main Sequence Markets
       root_directory: ""
       framework: vite
@@ -15,7 +16,7 @@ resources:
       build_environment:
         # Stable main FastAPI release identity. The SDK resolves its current
         # opaque RPC endpoint at request time after automatic API redeployments.
-        VITE_FASTAPI_RELEASE_UID: 62c2c7a4-eb2a-471e-8837-7e02c3c8fc09
+        VITE_FASTAPI_RELEASE_UID: a9832527-17ae-46b5-9ab5-a429656e08cc
       automatic_redeployment:
         enabled: true
         tag_regex: null

@@ -1,0 +1,22 @@
+api_version: 2.3.0
+name: main-sequence-markets-static-site-development
+scope:
+  environments: [development]
+resources:
+  - key: main-sequence-markets-site-development
+    kind: static_site
+    spec:
+      name: Main Sequence Markets Development
+      root_directory: ""
+      framework: vite
+      node_version: "24"
+      output_directory: dist
+      routing_mode: spa
+      spa_entry_file: /index.html
+      build_environment:
+        # Stable development FastAPI release identity. The SDK resolves its
+        # current opaque RPC endpoint after automatic API redeployments.
+        VITE_FASTAPI_RELEASE_UID: e2f9effd-988d-47bd-a25a-372d4887834b
+      automatic_redeployment:
+        enabled: true
+        tag_regex: null

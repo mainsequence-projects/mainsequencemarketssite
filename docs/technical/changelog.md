@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Added a development static-site release and environment-scoped workflow API `2.3.0` declarations
+  for both `development` and Production (`main`), with separate current FastAPI release targets.
+- Documented branch promotion and deployment verification while preserving the production release
+  identity and the existing delegated API transport.
 - Removed the root npm `packageManager` declaration that conflicted with the OpenAPI theme's
   transitive Postman code-generator Yarn installer during platform builds.
 - Added a read-only Docusaurus API reference generated from the reviewed pinned OpenAPI contract:
