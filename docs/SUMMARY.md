@@ -32,7 +32,7 @@ This map is rendered by Docusaurus at `/docs/` in the deployed Markets static si
   - [API reference](technical/api-reference.md)
   - [Route compatibility](technical/route-compatibility.md)
   - [Embedding and security](technical/embedding-security.md)
-  - [Deployment and rollback](technical/deployment-and-rollback.md)
+  - [Development and production deployment, promotion, and rollback](technical/deployment-and-rollback.md)
   - [Changelog](technical/changelog.md)
   - Implementation tasks
     - [001 MainSequence Markets site refactor](technical/implementation-tasks/001_mainsequence_markets_site_refactor.md)

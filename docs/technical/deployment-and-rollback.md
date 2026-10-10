@@ -2,10 +2,34 @@
 
 ## Platform-managed static release
 
-The repository owns `.mainsequence/workflows/static-site.yaml`. It declares one release named
-**Main Sequence Markets** with `root_directory: .`, Vite on Node.js 24, `dist` output, SPA
-routing through `/index.html`, and automatic redeployment for every synchronized commit on the
-registered `main` ProjectBranch. No development branch or second site release is declared.
+The repository owns two workflow API `2.3.0` declarations under `.mainsequence/workflows/`.
+Both files are committed in both branches; the backend applies only the declaration scoped to the
+branch's Organization Environment.
+
+| Git branch | Environment | Workflow | Release | FastAPI release UID |
+| --- | --- | --- | --- | --- |
+| `development` | development | `static-site-development.yaml` | Main Sequence Markets Development | `e2f9effd-988d-47bd-a25a-372d4887834b` |
+| `main` | Production | `static-site.yaml` | Main Sequence Markets | `a9832527-17ae-46b5-9ab5-a429656e08cc` |
+
+Production requires the exact Git branch `main`. A signed push creates the site's missing
+`development` CodeRepositoryBranch because the Organization's development Environment already
+requires that exact branch. There is no manual branch registration or environment override.
+
+Each workflow uses `root_directory: ""` for the repository root, Vite on Node.js 24, `dist` output,
+SPA routing through `/index.html`, and automatic redeployment for every synchronized commit
+(`enabled: true`, `tag_regex: null`). Validate each file with the owning branch's backend
+`validate-workflow` action before pushing. Preserve the existing production file path and resource
+key: renaming either would replace its release identity.
+
+Develop and push changes on `development`, verify the development site and API together, then
+promote the tested code to `main`. Keep both scoped files during promotion; never replace the
+production API UID with the development UID. Inspect repository-event results and DeploymentRuns,
+and confirm each release's ready active revision serves the expected commit. An API release with
+no active revision cannot serve the site even when the static build succeeds.
+
+Organization Environment names do not select infrastructure hostnames. Treat the backend-returned
+site and API URLs as opaque; use the active platform's advertised CORS origins instead of deriving
+hostnames from the Git branch.
 
 The workflow's existing npm build produces both surfaces in the same `dist/` output: Vite emits the
 Markets application at the root, then Docusaurus emits real static pages under `dist/docs/`. The
@@ -24,7 +48,7 @@ and injects the reserved `VITE_COMMAND_CENTER_ORIGIN`; do not commit or derive a
 hostname. The FastAPI release UID is stable across automatic API redeployments; the SDK resolves
 the current opaque RPC endpoint and delegated credential at request time. Do not add a copied
 runtime URL to the platform workflow. Build inputs are public and must never contain credentials.
-The production application is embedded-only. Opening the static release URL outside Command Center
+Both deployed applications are embedded-only. Opening a static release URL outside Command Center
 fails closed instead of switching to a direct browser API origin.
 
 The deployable SDK is stored as `vendor/dev-mainsequence-command-center-sdk-0.1.13.tgz` and
@@ -48,7 +72,7 @@ credential resolver.
 ## First cutover
 
 1. Pin the intended site commit and API release.
-2. Confirm the repository workflow was accepted for the exact `main` ProjectBranch.
+2. Confirm the scoped repository workflow was accepted for the exact target CodeRepositoryBranch.
 3. Verify the target FastAPI release admits the deployed static-site origin and that delegated GET,
    POST, PATCH, and DELETE requests succeed.
 4. Smoke-test embedded reads and mutations through delegated `fetchFastApi` transport.
