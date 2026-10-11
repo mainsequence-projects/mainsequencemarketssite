@@ -14,9 +14,14 @@ resources:
       routing_mode: spa
       spa_entry_file: /index.html
       build_environment:
-        # Stable main FastAPI release identity. The SDK resolves its current
-        # opaque RPC endpoint at request time after automatic API redeployments.
-        VITE_FASTAPI_RELEASE_UID: a9832527-17ae-46b5-9ab5-a429656e08cc
+        # The Markets API by repository and workflow key. Main Sequence resolves
+        # it to that API's release UID in this site's Environment at every build,
+        # and rebuilds the site when the API is re-created. The SDK resolves the
+        # release's current RPC endpoint at request time.
+        VITE_FASTAPI_RELEASE_UID:
+          resource_release:
+            repository: MainSequenceMarkets
+            key: markets-api
       automatic_redeployment:
         enabled: true
         tag_regex: null

@@ -6,10 +6,14 @@ The repository owns two workflow API `2.3.0` declarations under `.mainsequence/w
 Both files are committed in both branches; the backend applies only the declaration scoped to the
 branch's Organization Environment.
 
-| Git branch | Environment | Workflow | Release | FastAPI release UID |
+| Git branch | Environment | Workflow | Release | FastAPI release |
 | --- | --- | --- | --- | --- |
-| `development` | development | `static-site-development.yaml` | Main Sequence Markets Development | `e2f9effd-988d-47bd-a25a-372d4887834b` |
-| `main` | Production | `static-site.yaml` | Main Sequence Markets | `a9832527-17ae-46b5-9ab5-a429656e08cc` |
+| `development` | development | `static-site-development.yaml` | Main Sequence Markets Development | `markets-api` of `MainSequenceMarkets` in development (`e2f9effd-988d-47bd-a25a-372d4887834b` on 2026-10-11) |
+| `main` | Production | `static-site.yaml` | Main Sequence Markets | `markets-api` of `MainSequenceMarkets` in Production (`a9832527-17ae-46b5-9ab5-a429656e08cc` on 2026-10-11) |
+
+The scopes are the Environments' exact names in this backend, `development` and `Production`: the
+backend's `validate-workflow` reports `static-site.yaml` applicable only on `main` and
+`static-site-development.yaml` only on `development`.
 
 Production requires the exact Git branch `main`. A signed push creates the site's missing
 `development` CodeRepositoryBranch because the Organization's development Environment already
@@ -22,10 +26,10 @@ SPA routing through `/index.html`, and automatic redeployment for every synchron
 key: renaming either would replace its release identity.
 
 Develop and push changes on `development`, verify the development site and API together, then
-promote the tested code to `main`. Keep both scoped files during promotion; never replace the
-production API UID with the development UID. Inspect repository-event results and DeploymentRuns,
-and confirm each release's ready active revision serves the expected commit. An API release with
-no active revision cannot serve the site even when the static build succeeds.
+promote the tested code to `main`. Keep both scoped files during promotion. Inspect
+repository-event results and DeploymentRuns, and confirm each release's ready active revision
+serves the expected commit. An API release with no active revision cannot serve the site even when
+the static build succeeds.
 
 Organization Environment names do not select infrastructure hostnames. Treat the backend-returned
 site and API URLs as opaque; use the active platform's advertised CORS origins instead of deriving
@@ -43,11 +47,16 @@ reviewed source. Updating the reference therefore requires reviewing and committ
 snapshot first.
 
 The only application-specific browser build input is `VITE_FASTAPI_RELEASE_UID`, which selects the
-Main Sequence Markets API release used by the SDK's delegated FastAPI transport. The platform owns
+Main Sequence Markets API release used by the SDK's delegated FastAPI transport. Both workflows name
+that API instead of pinning its UID:
+`{resource_release: {repository: MainSequenceMarkets, key: markets-api}}`. The platform resolves it
+to the API's release UID in the site's own Environment at every build, so each branch gets its
+Environment's API, and it rebuilds the site when the API is re-created. The platform owns
 and injects the reserved `VITE_COMMAND_CENTER_ORIGIN`; do not commit or derive a Command Center
 hostname. The FastAPI release UID is stable across automatic API redeployments; the SDK resolves
 the current opaque RPC endpoint and delegated credential at request time. Do not add a copied
-runtime URL to the platform workflow. Build inputs are public and must never contain credentials.
+runtime URL or a pinned UID to the platform workflow. Build inputs are public and must never
+contain credentials.
 Both deployed applications are embedded-only. Opening a static release URL outside Command Center
 fails closed instead of switching to a direct browser API origin.
 
