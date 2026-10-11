@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Updated the public Command Center SDK to `0.5.17`, refreshed managed guidance,
+  and replaced the old vendored SDK archive with the pinned npm artifact.
+
 - Added a development static-site release and environment-scoped workflow API `2.3.0` declarations
   for both `development` and Production (`main`), with separate current FastAPI release targets.
 - Documented branch promotion and deployment verification while preserving the production release

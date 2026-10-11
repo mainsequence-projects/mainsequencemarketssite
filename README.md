@@ -47,9 +47,8 @@ The repository declares two environment-scoped Vite SPA releases. The `developme
 deploys **Main Sequence Markets** in Production through `static-site.yaml`. Both workflow files
 live under `.mainsequence/workflows/` in both branches, so merging code preserves each environment's
 API target. Every synchronized commit is eligible for automatic rebuild and deployment in its
-matching environment. The remote builder installs the repository-contained Command
-Center SDK `0.1.13` archive, so it does not depend on a developer-local path or an unpinned registry
-package. Each release's public build environment contains only its environment's stable Markets
+matching environment. The remote builder installs public Command Center SDK `0.5.17` from the npm
+registry, with its artifact and integrity pinned by `package-lock.json`. Each release's public build environment contains only its environment's stable Markets
 FastAPI ResourceRelease UID. Automatic API redeployments keep that identity, while the SDK obtains the
 current opaque RPC endpoint and delegated credential at request time; the workflow must not copy a
 runtime URL or credential into the browser bundle. The production site is embedded-only and retains
@@ -82,7 +81,7 @@ icon fixed to the bottom of the Markets application rail. Documentation is divid
   [Main Sequence Markets API repository](https://github.com/mainsequence-projects/MainSequenceMarkets).
 - [Complete documentation map](docs/SUMMARY.md)
 
-The SDK alignment baseline is implemented against the repository-contained SDK `0.1.13` package.
+The SDK alignment baseline is implemented against public SDK `0.5.17`.
 All 25 backend collections and discovery operations are captured in the
 [pinned OpenAPI document](docs/technical/contracts/mainsequencemarkets-openapi.json),
 and account and pricing-curve views use distinct canonical detail and summary operations. Applying

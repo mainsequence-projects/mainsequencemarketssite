@@ -51,9 +51,11 @@ runtime URL to the platform workflow. Build inputs are public and must never con
 Both deployed applications are embedded-only. Opening a static release URL outside Command Center
 fails closed instead of switching to a direct browser API origin.
 
-The deployable SDK is stored as `vendor/dev-mainsequence-command-center-sdk-0.1.13.tgz` and
-referenced through a repository-relative `file:` dependency. The archive is the published npm
-artifact and keeps remote builds reproducible without a workstation path.
+The application declares public SDK `0.5.17` from npm. `package-lock.json` records
+the resolved artifact and integrity; `npm ci` installs that exact dependency graph.
+After a dependency change, run `npx command-center-sdk code-repository sync --path .`
+to refresh the lockfile and install it. The command performs no Git or deployment
+operation. Commit the reviewed change and push only when publication is authorized.
 
 ## Local direct development
 
