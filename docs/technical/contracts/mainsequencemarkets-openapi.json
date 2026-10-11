@@ -2,7 +2,7 @@
   "components": {
     "schemas": {
       "Account": {
-        "description": "Canonical account registry keyed by uid and unique_identifier. Stores client or execution-account identity, status flags, holdings DataNode linkage, optional account group membership, and account metadata used by holdings and execution workflows. Allocation-model tracking belongs to AccountTargetAllocationTable.",
+        "description": "Canonical account registry keyed by uid and unique_identifier. Stores client or execution-account identity, status flags, holdings TimeIndexTableUpdater linkage, optional account group membership, and account metadata used by holdings and execution workflows. Allocation-model tracking belongs to AccountTargetAllocationTable.",
         "properties": {
           "account_group_uid": {
             "anyOf": [
@@ -1341,7 +1341,7 @@
         "type": "object"
       },
       "Asset": {
-        "description": "Canonical asset identity table keyed by uid and unique_identifier. Holds only shared asset identity and asset_type so type-specific properties live in one-to-one asset detail tables or DataNode storage.",
+        "description": "Canonical asset identity table keyed by uid and unique_identifier. Holds only shared asset identity and asset_type so type-specific properties live in one-to-one asset detail tables or time-index-table output.",
         "properties": {
           "asset_type": {
             "anyOf": [
@@ -1362,7 +1362,7 @@
             "type": "string"
           },
           "unique_identifier": {
-            "description": "Unique stable asset business identifier used for idempotent upserts, lookup, and asset-indexed DataNode joins.",
+            "description": "Unique stable asset business identifier used for idempotent upserts, lookup, and asset-indexed TimeIndexTableUpdater joins.",
             "title": "Unique Identifier",
             "type": "string"
           }
@@ -1902,14 +1902,6 @@
             "title": "Response Contract",
             "type": "string"
           },
-          "response_mappings": {
-            "items": {
-              "additionalProperties": true,
-              "type": "object"
-            },
-            "title": "Response Mappings",
-            "type": "array"
-          },
           "response_model": {
             "title": "Response Model",
             "type": "string"
@@ -2208,21 +2200,6 @@
         "title": "BondCashflowsResponse",
         "type": "object",
         "x-command-center-consumer": "app-component",
-        "x-response-mappings": [
-          {
-            "contentType": "application/json",
-            "contract": "core.tabular_frame@v1",
-            "fieldTypes": {
-              "amount": "number",
-              "payment_date": "date",
-              "rate": "number"
-            },
-            "id": "cashflow_rows_by_leg",
-            "label": "Cashflow rows by leg",
-            "rowsPath": "$.legs.*[*]",
-            "statusCode": "200"
-          }
-        ],
         "x-ui-flat-outputs": [
           "legs"
         ],
@@ -2612,20 +2589,6 @@
         "title": "BondNetCashflowsResponse",
         "type": "object",
         "x-command-center-consumer": "app-component",
-        "x-response-mappings": [
-          {
-            "contentType": "application/json",
-            "contract": "core.tabular_frame@v1",
-            "fieldTypes": {
-              "net_cashflow": "number",
-              "payment_date": "date"
-            },
-            "id": "net_cashflows",
-            "label": "Net cashflows",
-            "rowsPath": "$.cashflows",
-            "statusCode": "200"
-          }
-        ],
         "x-ui-flat-outputs": [
           "cashflows"
         ],
@@ -3079,8 +3042,28 @@
         "title": "BulkActionOption",
         "type": "object"
       },
-      "BulkActionPreflightResponse": {
+      "BulkDeleteAssetCategoriesResponse": {
+        "description": "Result of deleting an explicitly selected set of Asset categories.",
+        "properties": {
+          "deleted_count": {
+            "title": "Deleted Count",
+            "type": "integer"
+          },
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          }
+        },
+        "required": [
+          "detail",
+          "deleted_count"
+        ],
+        "title": "BulkDeleteAssetCategoriesResponse",
+        "type": "object"
+      },
+      "BulkDeletePreflightResponse": {
         "additionalProperties": true,
+        "description": "Bulk-delete preflight that also reports what deleting the selection reaches.",
         "properties": {
           "allowed": {
             "title": "Allowed",
@@ -3110,6 +3093,17 @@
               }
             ],
             "title": "Detail"
+          },
+          "impact": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TableImpact"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "MetaTables delete_rows impact for the table the selected rows are deleted from: the tables its foreign-key actions reach, the effect on each and whether the caller may write each table. Each cascade is also summarized in warnings. Null when MetaTables could not compute it."
           },
           "matched_count": {
             "anyOf": [
@@ -3141,26 +3135,7 @@
         "required": [
           "allowed"
         ],
-        "title": "BulkActionPreflightResponse",
-        "type": "object"
-      },
-      "BulkDeleteAssetCategoriesResponse": {
-        "description": "Result of deleting an explicitly selected set of Asset categories.",
-        "properties": {
-          "deleted_count": {
-            "title": "Deleted Count",
-            "type": "integer"
-          },
-          "detail": {
-            "title": "Detail",
-            "type": "string"
-          }
-        },
-        "required": [
-          "detail",
-          "deleted_count"
-        ],
-        "title": "BulkDeleteAssetCategoriesResponse",
+        "title": "BulkDeletePreflightResponse",
         "type": "object"
       },
       "BulkUpsertCalendarDatesRequest": {
@@ -6011,6 +5986,8 @@
         "type": "object"
       },
       "ErrorResponse": {
+        "additionalProperties": false,
+        "description": "Compatibility model for existing endpoints whose error detail is plain text.",
         "properties": {
           "detail": {
             "title": "Detail",
@@ -7375,7 +7352,7 @@
         "type": "object"
       },
       "Portfolio": {
-        "description": "Portfolio identity and configuration table keyed by unique_identifier. Stores required calendar linkage, optional published index linkage, and DataNode pointers used to publish portfolio weights, signals, and values.",
+        "description": "Portfolio identity and configuration table keyed by unique_identifier. Stores required calendar linkage, optional published index linkage, and TimeIndexTableUpdater pointers used to publish portfolio weights, signals, and values.",
         "properties": {
           "backtest_table_price_column_name": {
             "default": "close",
@@ -7399,7 +7376,7 @@
                 "type": "null"
               }
             ],
-            "description": "Platform DataNodeUpdate.uid for the portfolio-level data producer.",
+            "description": "Platform TimeIndexTableUpdate.uid for the portfolio-level data producer.",
             "title": "Portfolio Data Node Uid"
           },
           "portfolio_weights_data_node_uid": {
@@ -7412,7 +7389,7 @@
                 "type": "null"
               }
             ],
-            "description": "Platform DataNodeUpdate.uid for the portfolio weights producer.",
+            "description": "Platform TimeIndexTableUpdate.uid for the portfolio weights producer.",
             "title": "Portfolio Weights Data Node Uid"
           },
           "published_index_uid": {
@@ -7450,7 +7427,7 @@
                 "type": "null"
               }
             ],
-            "description": "Platform DataNodeUpdate.uid for the signal weights producer.",
+            "description": "Platform TimeIndexTableUpdate.uid for the signal weights producer.",
             "title": "Signal Weights Data Node Uid"
           },
           "uid": {
@@ -10561,7 +10538,7 @@
         "type": "object"
       },
       "SignalMetadata": {
-        "description": "Signal metadata table keyed by signal_uid. Stores descriptive text for canonical portfolio signals used by signal-weight DataNode outputs and portfolio signal pointers.",
+        "description": "Signal metadata table keyed by signal_uid. Stores descriptive text for canonical portfolio signals used by signal-weight TimeIndexTableUpdater outputs and portfolio signal pointers.",
         "properties": {
           "signal_description": {
             "anyOf": [
@@ -10660,6 +10637,266 @@
           }
         },
         "title": "TableFrameVisualsMetadata",
+        "type": "object"
+      },
+      "TableImpact": {
+        "description": "MetaTables' answer to what an action on a table reaches and whether it may run.",
+        "properties": {
+          "action": {
+            "description": "delete_rows, update_keys or drop_table.",
+            "title": "Action",
+            "type": "string"
+          },
+          "allowed": {
+            "title": "Allowed",
+            "type": "boolean"
+          },
+          "blockers": {
+            "items": {
+              "$ref": "#/components/schemas/TableImpactBlocker"
+            },
+            "title": "Blockers",
+            "type": "array"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/TableImpactEdge"
+            },
+            "title": "Edges",
+            "type": "array"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/TableImpactNode"
+            },
+            "title": "Nodes",
+            "type": "array"
+          },
+          "root_uid": {
+            "title": "Root Uid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "root_uid",
+          "action",
+          "allowed",
+          "nodes",
+          "edges",
+          "blockers"
+        ],
+        "title": "TableImpact",
+        "type": "object"
+      },
+      "TableImpactBlocker": {
+        "description": "A reason MetaTables gives for refusing the action, and the node it concerns.",
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "node": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "TableImpactBlocker",
+        "type": "object"
+      },
+      "TableImpactEdge": {
+        "description": "Points from the dependent (referencing table or reading update) to what it depends on.",
+        "properties": {
+          "effect": {
+            "description": "cascade_delete, cascade_update, set_null, set_default, restrict (fails while referencing rows exist), drop or reads.",
+            "title": "Effect",
+            "type": "string"
+          },
+          "kind": {
+            "description": "foreign_key, alembic_version or reads.",
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "on_delete": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "On Delete"
+          },
+          "on_update": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "On Update"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "target": {
+            "title": "Target",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "target",
+          "kind",
+          "effect"
+        ],
+        "title": "TableImpactEdge",
+        "type": "object"
+      },
+      "TableImpactNode": {
+        "description": "A table, unregistered relation, update or hidden table the action reaches.",
+        "properties": {
+          "can_write": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Whether the caller may write this table; null for updates.",
+            "title": "Can Write"
+          },
+          "effects": {
+            "description": "What the action does here: drop, delete, update or input_changed.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Effects",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "identifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Identifier"
+          },
+          "namespace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Namespace"
+          },
+          "output_table_uid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Table Uid"
+          },
+          "physical_schema": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Physical Schema"
+          },
+          "physical_table_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Physical Table Name"
+          },
+          "table_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Table Kind"
+          },
+          "type": {
+            "description": "meta_table, relation, update or hidden.",
+            "title": "Type",
+            "type": "string"
+          },
+          "uid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uid"
+          }
+        },
+        "required": [
+          "id",
+          "type"
+        ],
+        "title": "TableImpactNode",
         "type": "object"
       },
       "TableVisualColorScale": {
@@ -11955,7 +12192,7 @@
   "info": {
     "description": "HTTP interface for Main Sequence Markets application resources. The API exposes canonical Command Center collections and discovery contracts alongside typed detail, summary, action, pricing, and market-data operations. Route handlers resolve into reusable markets logic from `src/`; OpenAPI is the authoritative machine-readable description of this HTTP surface.",
     "title": "MainSequence Markets Public API",
-    "version": "0.0.108",
+    "version": "2.2.10",
     "x-app-scope": "apps/v1",
     "x-logo": {
       "altText": "Main Sequence Markets",
@@ -13033,7 +13270,7 @@
     },
     "/api/v1/asset-category/bulk-delete/preflight/": {
       "post": {
-        "description": "Reauthorize and resolve an explicit category selection without deleting rows.",
+        "description": "Reauthorize and resolve an explicit category selection without deleting rows, and report the tables the delete reaches through foreign-key cascades.",
         "operationId": "preflightBulkDeleteAssetCategories",
         "requestBody": {
           "content": {
@@ -13051,7 +13288,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BulkActionPreflightResponse"
+                  "$ref": "#/components/schemas/BulkDeletePreflightResponse"
                 }
               }
             },
@@ -17623,7 +17860,7 @@
     },
     "/api/v1/portfolio-group/bulk-delete/preflight/": {
       "post": {
-        "description": "Reauthorize and resolve an explicit group selection without deleting rows.",
+        "description": "Reauthorize and resolve an explicit group selection without deleting rows, and report the tables the delete reaches through foreign-key cascades.",
         "operationId": "preflightBulkDeletePortfolioGroups",
         "requestBody": {
           "content": {
@@ -17641,7 +17878,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BulkActionPreflightResponse"
+                  "$ref": "#/components/schemas/BulkDeletePreflightResponse"
                 }
               }
             },
@@ -18934,7 +19171,7 @@
     },
     "/api/v1/portfolio/bulk-delete/preflight/": {
       "post": {
-        "description": "Reauthorize an explicit portfolio selection and report missing rows or protected references without deleting data.",
+        "description": "Reauthorize an explicit portfolio selection and report missing rows, protected references and the tables the delete reaches through foreign-key cascades, without deleting data.",
         "operationId": "preflightBulkDeletePortfolios",
         "requestBody": {
           "content": {
@@ -18952,7 +19189,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BulkActionPreflightResponse"
+                  "$ref": "#/components/schemas/BulkDeletePreflightResponse"
                 }
               }
             },
@@ -19277,7 +19514,7 @@
     },
     "/api/v1/portfolio/{uid}/signals_weights/": {
       "get": {
-        "description": "Return raw signal-weight rows for the signal DataNode linked from the portfolio row as a canonical Command Center tabular frame.",
+        "description": "Return raw signal-weight rows for the signal TimeIndexTableUpdater linked from the portfolio row as a canonical Command Center tabular frame.",
         "operationId": "getPortfolioSignalWeightsFrame",
         "parameters": [
           {
@@ -19377,7 +19614,7 @@
                 }
               }
             },
-            "description": "The portfolio has no signal DataNode link or the request is invalid."
+            "description": "The portfolio has no signal TimeIndexTableUpdater link or the request is invalid."
           },
           "404": {
             "content": {
@@ -21420,7 +21657,7 @@
     },
     "/api/v1/pricing/market_data/bindings/resolve/": {
       "get": {
-        "description": "Resolve the DataNode storage uid used by one pricing concept in a market-data set.",
+        "description": "Resolve the time-index-table output uid used by one pricing concept in a market-data set.",
         "operationId": "resolvePricingMarketDataBinding",
         "parameters": [
           {

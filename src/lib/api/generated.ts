@@ -299,7 +299,7 @@ export interface paths {
         put?: never;
         /**
          * Preflight asset-category bulk deletion
-         * @description Reauthorize and resolve an explicit category selection without deleting rows.
+         * @description Reauthorize and resolve an explicit category selection without deleting rows, and report the tables the delete reaches through foreign-key cascades.
          */
         post: operations["preflightBulkDeleteAssetCategories"];
         delete?: never;
@@ -1295,7 +1295,7 @@ export interface paths {
         put?: never;
         /**
          * Preflight portfolio-group bulk deletion
-         * @description Reauthorize and resolve an explicit group selection without deleting rows.
+         * @description Reauthorize and resolve an explicit group selection without deleting rows, and report the tables the delete reaches through foreign-key cascades.
          */
         post: operations["preflightBulkDeletePortfolioGroups"];
         delete?: never;
@@ -1639,7 +1639,7 @@ export interface paths {
         put?: never;
         /**
          * Preflight portfolio bulk deletion
-         * @description Reauthorize an explicit portfolio selection and report missing rows or protected references without deleting data.
+         * @description Reauthorize an explicit portfolio selection and report missing rows, protected references and the tables the delete reaches through foreign-key cascades, without deleting data.
          */
         post: operations["preflightBulkDeletePortfolios"];
         delete?: never;
@@ -1721,7 +1721,7 @@ export interface paths {
         };
         /**
          * Get portfolio signal weights frame
-         * @description Return raw signal-weight rows for the signal DataNode linked from the portfolio row as a canonical Command Center tabular frame.
+         * @description Return raw signal-weight rows for the signal TimeIndexTableUpdater linked from the portfolio row as a canonical Command Center tabular frame.
          */
         get: operations["getPortfolioSignalWeightsFrame"];
         put?: never;
@@ -2253,7 +2253,7 @@ export interface paths {
         };
         /**
          * Resolve pricing market-data binding
-         * @description Resolve the DataNode storage uid used by one pricing concept in a market-data set.
+         * @description Resolve the time-index-table output uid used by one pricing concept in a market-data set.
          */
         get: operations["resolvePricingMarketDataBinding"];
         put?: never;
@@ -2610,7 +2610,7 @@ export interface components {
     schemas: {
         /**
          * Account
-         * @description Canonical account registry keyed by uid and unique_identifier. Stores client or execution-account identity, status flags, holdings DataNode linkage, optional account group membership, and account metadata used by holdings and execution workflows. Allocation-model tracking belongs to AccountTargetAllocationTable.
+         * @description Canonical account registry keyed by uid and unique_identifier. Stores client or execution-account identity, status flags, holdings TimeIndexTableUpdater linkage, optional account group membership, and account metadata used by holdings and execution workflows. Allocation-model tracking belongs to AccountTargetAllocationTable.
          */
         Account: {
             /**
@@ -3036,7 +3036,7 @@ export interface components {
         };
         /**
          * Asset
-         * @description Canonical asset identity table keyed by uid and unique_identifier. Holds only shared asset identity and asset_type so type-specific properties live in one-to-one asset detail tables or DataNode storage.
+         * @description Canonical asset identity table keyed by uid and unique_identifier. Holds only shared asset identity and asset_type so type-specific properties live in one-to-one asset detail tables or time-index-table output.
          */
         Asset: {
             /**
@@ -3052,7 +3052,7 @@ export interface components {
             uid: string;
             /**
              * Unique Identifier
-             * @description Unique stable asset business identifier used for idempotent upserts, lookup, and asset-indexed DataNode joins.
+             * @description Unique stable asset business identifier used for idempotent upserts, lookup, and asset-indexed TimeIndexTableUpdater joins.
              */
             unique_identifier: string;
         };
@@ -3305,10 +3305,6 @@ export interface components {
             requires_valuation_date: boolean;
             /** Response Contract */
             response_contract: string;
-            /** Response Mappings */
-            response_mappings?: {
-                [key: string]: unknown;
-            }[];
             /** Response Model */
             response_model: string;
             /** Supports Market Data Set */
@@ -3744,21 +3740,6 @@ export interface components {
              */
             type: "boolean";
         };
-        /** BulkActionPreflightResponse */
-        BulkActionPreflightResponse: {
-            /** Allowed */
-            allowed: boolean;
-            /** Blockers */
-            blockers?: string[] | null;
-            /** Detail */
-            detail?: string | null;
-            /** Matched Count */
-            matched_count?: number | null;
-            /** Warnings */
-            warnings?: string[] | null;
-        } & {
-            [key: string]: unknown;
-        };
         /**
          * BulkDeleteAssetCategoriesResponse
          * @description Result of deleting an explicitly selected set of Asset categories.
@@ -3768,6 +3749,26 @@ export interface components {
             deleted_count: number;
             /** Detail */
             detail: string;
+        };
+        /**
+         * BulkDeletePreflightResponse
+         * @description Bulk-delete preflight that also reports what deleting the selection reaches.
+         */
+        BulkDeletePreflightResponse: {
+            /** Allowed */
+            allowed: boolean;
+            /** Blockers */
+            blockers?: string[] | null;
+            /** Detail */
+            detail?: string | null;
+            /** @description MetaTables delete_rows impact for the table the selected rows are deleted from: the tables its foreign-key actions reach, the effect on each and whether the caller may write each table. Each cascade is also summarized in warnings. Null when MetaTables could not compute it. */
+            impact?: components["schemas"]["TableImpact"] | null;
+            /** Matched Count */
+            matched_count?: number | null;
+            /** Warnings */
+            warnings?: string[] | null;
+        } & {
+            [key: string]: unknown;
         };
         /** BulkUpsertCalendarDatesRequest */
         BulkUpsertCalendarDatesRequest: {
@@ -4814,7 +4815,10 @@ export interface components {
             /** Valuation Date */
             valuation_date?: string | null;
         };
-        /** ErrorResponse */
+        /**
+         * ErrorResponse
+         * @description Compatibility model for existing endpoints whose error detail is plain text.
+         */
         ErrorResponse: {
             /** Detail */
             detail: string;
@@ -5297,7 +5301,7 @@ export interface components {
         };
         /**
          * Portfolio
-         * @description Portfolio identity and configuration table keyed by unique_identifier. Stores required calendar linkage, optional published index linkage, and DataNode pointers used to publish portfolio weights, signals, and values.
+         * @description Portfolio identity and configuration table keyed by unique_identifier. Stores required calendar linkage, optional published index linkage, and TimeIndexTableUpdater pointers used to publish portfolio weights, signals, and values.
          */
         Portfolio: {
             /**
@@ -5314,12 +5318,12 @@ export interface components {
             calendar_uid: string;
             /**
              * Portfolio Data Node Uid
-             * @description Platform DataNodeUpdate.uid for the portfolio-level data producer.
+             * @description Platform TimeIndexTableUpdate.uid for the portfolio-level data producer.
              */
             portfolio_data_node_uid?: string | null;
             /**
              * Portfolio Weights Data Node Uid
-             * @description Platform DataNodeUpdate.uid for the portfolio weights producer.
+             * @description Platform TimeIndexTableUpdate.uid for the portfolio weights producer.
              */
             portfolio_weights_data_node_uid?: string | null;
             /**
@@ -5334,7 +5338,7 @@ export interface components {
             signal_uid?: string | null;
             /**
              * Signal Weights Data Node Uid
-             * @description Platform DataNodeUpdate.uid for the signal weights producer.
+             * @description Platform TimeIndexTableUpdate.uid for the signal weights producer.
              */
             signal_weights_data_node_uid?: string | null;
             /**
@@ -6341,7 +6345,7 @@ export interface components {
         };
         /**
          * SignalMetadata
-         * @description Signal metadata table keyed by signal_uid. Stores descriptive text for canonical portfolio signals used by signal-weight DataNode outputs and portfolio signal pointers.
+         * @description Signal metadata table keyed by signal_uid. Stores descriptive text for canonical portfolio signals used by signal-weight TimeIndexTableUpdater outputs and portfolio signal pointers.
          */
         SignalMetadata: {
             /**
@@ -6385,6 +6389,102 @@ export interface components {
             columns?: {
                 [key: string]: components["schemas"]["TableVisualColumn"];
             } | null;
+        };
+        /**
+         * TableImpact
+         * @description MetaTables' answer to what an action on a table reaches and whether it may run.
+         */
+        TableImpact: {
+            /**
+             * Action
+             * @description delete_rows, update_keys or drop_table.
+             */
+            action: string;
+            /** Allowed */
+            allowed: boolean;
+            /** Blockers */
+            blockers: components["schemas"]["TableImpactBlocker"][];
+            /** Edges */
+            edges: components["schemas"]["TableImpactEdge"][];
+            /** Nodes */
+            nodes: components["schemas"]["TableImpactNode"][];
+            /** Root Uid */
+            root_uid: string;
+        };
+        /**
+         * TableImpactBlocker
+         * @description A reason MetaTables gives for refusing the action, and the node it concerns.
+         */
+        TableImpactBlocker: {
+            /** Code */
+            code: string;
+            /** Message */
+            message: string;
+            /** Node */
+            node?: string | null;
+        };
+        /**
+         * TableImpactEdge
+         * @description Points from the dependent (referencing table or reading update) to what it depends on.
+         */
+        TableImpactEdge: {
+            /**
+             * Effect
+             * @description cascade_delete, cascade_update, set_null, set_default, restrict (fails while referencing rows exist), drop or reads.
+             */
+            effect: string;
+            /**
+             * Kind
+             * @description foreign_key, alembic_version or reads.
+             */
+            kind: string;
+            /** Name */
+            name?: string | null;
+            /** On Delete */
+            on_delete?: string | null;
+            /** On Update */
+            on_update?: string | null;
+            /** Source */
+            source: string;
+            /** Target */
+            target: string;
+        };
+        /**
+         * TableImpactNode
+         * @description A table, unregistered relation, update or hidden table the action reaches.
+         */
+        TableImpactNode: {
+            /**
+             * Can Write
+             * @description Whether the caller may write this table; null for updates.
+             */
+            can_write?: boolean | null;
+            /**
+             * Effects
+             * @description What the action does here: drop, delete, update or input_changed.
+             */
+            effects?: string[];
+            /** Id */
+            id: string;
+            /** Identifier */
+            identifier?: string | null;
+            /** Namespace */
+            namespace?: string | null;
+            /** Output Table Uid */
+            output_table_uid?: string | null;
+            /** Physical Schema */
+            physical_schema?: string | null;
+            /** Physical Table Name */
+            physical_table_name?: string | null;
+            /** Table Kind */
+            table_kind?: string | null;
+            /**
+             * Type
+             * @description meta_table, relation, update or hidden.
+             */
+            type: string;
+            /** Uid */
+            uid?: string | null;
         };
         /** TableVisualColorScale */
         TableVisualColorScale: {
@@ -7365,7 +7465,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["BulkActionPreflightResponse"];
+                    "application/json": components["schemas"]["BulkDeletePreflightResponse"];
                 };
             };
             /** @description Bad Request */
@@ -10055,7 +10155,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["BulkActionPreflightResponse"];
+                    "application/json": components["schemas"]["BulkDeletePreflightResponse"];
                 };
             };
             /** @description Bad Request */
@@ -10950,7 +11050,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["BulkActionPreflightResponse"];
+                    "application/json": components["schemas"]["BulkDeletePreflightResponse"];
                 };
             };
             /** @description Bad Request */
@@ -11187,7 +11287,7 @@ export interface operations {
                     "application/json": components["schemas"]["TabularFrameResponse"];
                 };
             };
-            /** @description The portfolio has no signal DataNode link or the request is invalid. */
+            /** @description The portfolio has no signal TimeIndexTableUpdater link or the request is invalid. */
             400: {
                 headers: {
                     [name: string]: unknown;

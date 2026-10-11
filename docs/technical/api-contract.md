@@ -8,9 +8,30 @@ and rendered here as a [generated API reference](api-reference.md).
 Generated TypeScript lives at `src/lib/api/generated.ts`. Resource definitions use
 `keyof operations`, so misspelled or removed operation IDs fail type checking.
 
+The snapshot is Main Sequence Markets **2.2.10** (`info.version`), the release deployed in both
+Environments. It was exported on 2026-10-11 from the API repository's `v2.2.10` tag with its
+`scripts/export_apps_v1_openapi.py`, using that release's locked dependencies, and replaced the
+`0.0.108` snapshot. The operations and their IDs are unchanged. The differences:
+
+- The asset-category, portfolio-group, and portfolio bulk-delete preflights return
+  `BulkDeletePreflightResponse` instead of `BulkActionPreflightResponse`. Besides the SDK preflight
+  fields it carries `impact`: MetaTables' `delete_rows` impact on the related tables (nodes,
+  foreign-key edges with their effect, and blockers, including tables the caller may not write),
+  or `null` when MetaTables cannot compute it. Each cascade is also summarized in `warnings`, and
+  each MetaTables refusal in `blockers`. The SDK's `bulk_action_preflight@v1` admits the extra
+  field, so the confirmation dialog shows the cascades and blockers and the adapter keeps the full
+  impact with the raw preflight.
+- `BondCashflowsResponse` and `BondNetCashflowsResponse` no longer declare `x-response-mappings`,
+  and `AssetPricingOperationLinkResponse` no longer has `response_mappings`; the site used neither.
+- `ErrorResponse` declares `additionalProperties: false`, and several descriptions name
+  TimeIndexTableUpdater instead of DataNode. The related-MetaTables rows (`RelatedMetaTable`) are
+  unchanged.
+
 ## Updating the contract
 
-1. Obtain `/openapi.json` from the intended compatible `mainsequencemarkets` API release.
+1. Obtain `/openapi.json` from the intended compatible `mainsequencemarkets` API release, or export
+   it from that release's tag with `python -m scripts.export_apps_v1_openapi --output <file>` in
+   the API repository. The API reads `info.version` from the installed `ms-markets` metadata.
 2. Review the diff, especially routes, request bodies, required fields, responses, and operation IDs.
 3. Replace `docs/technical/contracts/mainsequencemarkets-openapi.json` with the reviewed artifact.
 4. Run `npm run api:generate` from the repository root.

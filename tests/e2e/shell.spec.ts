@@ -1,5 +1,9 @@
 import { expect, test, type Locator } from "@playwright/test";
 
+/** How Markets 2.2.10 words the asset-category delete's cascade into AssetCategoryMembership. */
+const ASSET_CATEGORY_CASCADE_WARNING =
+  "AssetCategoryMembership rows that reference deleted AssetCategory rows are deleted too (ON DELETE CASCADE).";
+
 test.beforeEach(async ({ page }) => {
   await page.route("http://127.0.0.1:2030/**", async (route) => {
     const url = new URL(route.request().url());
@@ -70,14 +74,33 @@ test.beforeEach(async ({ page }) => {
       return;
     }
     if (url.pathname === "/api/v1/asset-category/bulk-delete/preflight/") {
+      // Markets 2.2.10 BulkDeletePreflightResponse: MetaTables' delete_rows impact on the related
+      // tables, with each cascade summarized as a warning.
       await route.fulfill({
         contentType: "application/json",
         json: {
           allowed: true,
-          detail: "The selected categories can be deleted.",
+          detail: "2 asset categories are ready for deletion.",
           matched_count: 2,
           blockers: [],
-          warnings: [],
+          warnings: [ASSET_CATEGORY_CASCADE_WARNING],
+          impact: {
+            root_uid: "asset-category",
+            action: "delete_rows",
+            allowed: true,
+            nodes: [
+              { id: "meta_table:asset-category", type: "meta_table", identifier: "AssetCategory", effects: ["delete"], can_write: true },
+              { id: "meta_table:asset-category-membership", type: "meta_table", identifier: "AssetCategoryMembership", effects: ["delete"], can_write: true },
+            ],
+            edges: [{
+              source: "meta_table:asset-category-membership",
+              target: "meta_table:asset-category",
+              kind: "foreign_key",
+              effect: "cascade_delete",
+              on_delete: "CASCADE",
+            }],
+            blockers: [],
+          },
         },
       });
       return;
@@ -266,7 +289,9 @@ test("uses discovered bulk actions with preflight, confirmation, refresh, and cl
   await page.getByRole("menuitem", { name: "Delete selected" }).click();
 
   const dialog = page.getByRole("dialog", { name: "Delete asset categories" });
-  await expect(dialog.getByText("The selected categories can be deleted.")).toBeVisible();
+  await expect(dialog.getByText("2 asset categories are ready for deletion.")).toBeVisible();
+  // The cascade into the related MetaTable reaches the person before they confirm.
+  await expect(dialog.getByText(ASSET_CATEGORY_CASCADE_WARNING)).toBeVisible();
   await dialog.getByRole("textbox", { name: "Confirmation word" }).fill("DELETE");
   const execution = page.waitForResponse((response) => (
     response.request().method() === "POST"

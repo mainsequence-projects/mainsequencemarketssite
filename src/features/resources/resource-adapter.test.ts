@@ -85,10 +85,11 @@ describe("Markets SDK resource adapter", () => {
       })))
       .mockResolvedValueOnce(jsonResponse({
         allowed: true,
-        detail: "The selected categories can be deleted.",
+        detail: "2 asset categories are ready for deletion.",
         matched_count: 2,
         blockers: [],
-        warnings: [],
+        warnings: [ASSET_CATEGORY_CASCADE_WARNING],
+        impact: assetCategoryDeleteImpact(),
       }))
       .mockResolvedValueOnce(jsonResponse({ deleted: 2 }));
     const application = createMarketsResourceApplication(assetCategoriesDefinition);
@@ -137,7 +138,14 @@ describe("Markets SDK resource adapter", () => {
         signal: controller.signal,
       },
     ]);
-    expect(preflight).toMatchObject({ allowed: true, matchedCount: 2 });
+    // Markets 2.2.10 reports the related MetaTables the delete reaches: each cascade as a warning,
+    // and MetaTables' full delete_rows impact, which the SDK keeps with the raw preflight.
+    expect(preflight).toMatchObject({
+      allowed: true,
+      matchedCount: 2,
+      impacts: [{ message: ASSET_CATEGORY_CASCADE_WARNING, tone: "warning" }],
+      raw: { impact: { action: "delete_rows", edges: [{ kind: "foreign_key", effect: "cascade_delete" }] } },
+    });
   });
 
   it("preserves all-matching selection and normalized query scope when advertised", async () => {
@@ -202,29 +210,38 @@ describe("Markets SDK resource adapter", () => {
       })))
       .mockResolvedValueOnce(jsonResponse({
         allowed: false,
-        detail: "One category is protected.",
-        matched_count: 2,
-        blockers: ["Protected categories cannot be deleted."],
-        warnings: ["One category is used by an index."],
-        protected_uids: ["category-1"],
+        detail: "The asset-category selection cannot be deleted as submitted.",
+        matched_count: 1,
+        blockers: [
+          "Asset category category-9 was not found.",
+          "AssetCategoryMembership: You cannot delete rows from this table.",
+        ],
+        warnings: [ASSET_CATEGORY_CASCADE_WARNING],
+        impact: assetCategoryDeleteImpact({ canWriteMemberships: false }),
       }));
     const application = createMarketsResourceApplication(assetCategoriesDefinition);
     const discovery = await application.adapter.discover!({ filters: {} });
     const [action] = discovery.bulk_actions;
     const preflight = await application.adapter.preflightBulkAction!(action, {
-      selection: { mode: "explicit", uids: ["category-1", "category-2"] },
+      selection: { mode: "explicit", uids: ["category-1", "category-9"] },
       options: {},
     });
 
     expect(preflight).toMatchObject({
       allowed: false,
-      detail: "One category is protected.",
-      matchedCount: 2,
+      detail: "The asset-category selection cannot be deleted as submitted.",
+      matchedCount: 1,
       impacts: [
-        { message: "Protected categories cannot be deleted.", tone: "danger" },
-        { message: "One category is used by an index.", tone: "warning" },
+        { message: "Asset category category-9 was not found.", tone: "danger" },
+        { message: "AssetCategoryMembership: You cannot delete rows from this table.", tone: "danger" },
+        { message: ASSET_CATEGORY_CASCADE_WARNING, tone: "warning" },
       ],
-      raw: { protected_uids: ["category-1"] },
+      raw: {
+        impact: {
+          allowed: false,
+          blockers: [{ code: "not_writable", node: "meta_table:asset-category-membership" }],
+        },
+      },
     });
   });
 
@@ -345,5 +362,56 @@ function resourceDiscovery(input: {
       }],
     },
     bulk_actions: input.bulkActions ?? [],
+  };
+}
+
+/**
+ * Markets 2.2.10's bulk-delete preflight (`BulkDeletePreflightResponse`) carries MetaTables'
+ * delete_rows impact on the related tables, and summarizes each cascade as a warning worded as
+ * `msm.services.table_impact` words it. AssetCategoryMembership references AssetCategory with
+ * ON DELETE CASCADE.
+ */
+const ASSET_CATEGORY_CASCADE_WARNING =
+  "AssetCategoryMembership rows that reference deleted AssetCategory rows are deleted too (ON DELETE CASCADE).";
+
+function assetCategoryDeleteImpact(input: { canWriteMemberships?: boolean } = {}) {
+  const canWriteMemberships = input.canWriteMemberships ?? true;
+  return {
+    root_uid: "asset-category",
+    action: "delete_rows",
+    allowed: canWriteMemberships,
+    nodes: [
+      {
+        id: "meta_table:asset-category",
+        type: "meta_table",
+        uid: "asset-category",
+        identifier: "AssetCategory",
+        namespace: "mainsequence.markets",
+        effects: ["delete"],
+        can_write: true,
+      },
+      {
+        id: "meta_table:asset-category-membership",
+        type: "meta_table",
+        uid: "asset-category-membership",
+        identifier: "AssetCategoryMembership",
+        namespace: "mainsequence.markets",
+        effects: ["delete"],
+        can_write: canWriteMemberships,
+      },
+    ],
+    edges: [{
+      source: "meta_table:asset-category-membership",
+      target: "meta_table:asset-category",
+      kind: "foreign_key",
+      effect: "cascade_delete",
+      on_delete: "CASCADE",
+      on_update: "NO ACTION",
+    }],
+    blockers: canWriteMemberships ? [] : [{
+      code: "not_writable",
+      message: "You cannot delete rows from this table.",
+      node: "meta_table:asset-category-membership",
+    }],
   };
 }

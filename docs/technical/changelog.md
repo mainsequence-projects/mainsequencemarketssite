@@ -4,6 +4,13 @@
 
 - Updated the public Command Center SDK to `0.5.17`, refreshed managed guidance,
   and replaced the old vendored SDK archive with the pinned npm artifact.
+- Re-exported the OpenAPI contract from Main Sequence Markets `2.2.10`, the deployed release
+  (158 operations, 224 schemas), and regenerated `src/lib/api/generated.ts` and the API reference
+  (158 operation pages, 224 schema pages). Bulk-delete preflights now return MetaTables' delete
+  impact on the related tables; the preflight fixtures use that shape.
+- Both workflows name the Markets API as `{resource_release: {repository: MainSequenceMarkets,
+  key: markets-api}}` instead of pinning a release UID; the platform resolves it per Environment at
+  every build. Keys and scopes are unchanged.
 
 - Added a development static-site release and environment-scoped workflow API `2.3.0` declarations
   for both `development` and Production (`main`), with separate current FastAPI release targets.
